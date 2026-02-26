@@ -10,7 +10,12 @@ NightProbe adalah **Web Security Scanner berbasis Python dan Django** yang diran
 
 Tool ini dibuat untuk **penetration testing, security research, bug bounty, dan pembelajaran keamanan web**.
 
-Project ini dikembangkan oleh **Fakhri Sidqi Nuriadi**.
+# 👨‍💻 Author
+
+**Fakhri Sidqi Nuriadi**
+
+Cybersecurity enthusiast focused on web security, vulnerability research, and security tool development.
+
 
 ---
 
