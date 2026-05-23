@@ -1,23 +1,46 @@
+"""
+headers.py — Security HTTP Headers Checker
+Returns dict: { "Header-Name": "present" | "missing" }
+"""
 import requests
+import warnings
+warnings.filterwarnings("ignore")
 
-def check_headers(url):
+SECURITY_HEADERS = [
+    "Content-Security-Policy",
+    "Strict-Transport-Security",
+    "X-Frame-Options",
+    "X-Content-Type-Options",
+    "X-XSS-Protection",
+    "Referrer-Policy",
+]
 
-    result = []
+HEADERS = {"User-Agent": "NightProbe-Scanner/1.0"}
+
+
+def check_headers(url: str, timeout: int = 8) -> dict:
+    """
+    Fetch the URL and check for presence of security headers.
+    Returns dict: { "Header-Name": "present" | "missing" }
+    On connection error, returns { "error": "..." }
+    """
+    result = {}
 
     try:
-        r = requests.get(url)
-        h = r.headers
+        r = requests.get(
+            url, timeout=timeout, headers=HEADERS,
+            allow_redirects=True, verify=False
+        )
+        h_lower = {k.lower(): v for k, v in r.headers.items()}
 
-        if "Content-Security-Policy" not in h:
-            result.append("Missing CSP")
+        for header in SECURITY_HEADERS:
+            result[header] = "present" if header.lower() in h_lower else "missing"
 
-        if "X-Frame-Options" not in h:
-            result.append("Missing X-Frame-Options")
-
-        if "X-Content-Type-Options" not in h:
-            result.append("Missing X-Content-Type-Options")
-
-    except:
-        result.append("Connection error")
+    except requests.exceptions.Timeout:
+        result["error"] = "Connection timed out"
+    except requests.exceptions.ConnectionError as e:
+        result["error"] = f"Connection error: {e}"
+    except requests.exceptions.RequestException as e:
+        result["error"] = str(e)
 
     return result
