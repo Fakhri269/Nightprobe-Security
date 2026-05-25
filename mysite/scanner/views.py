@@ -66,8 +66,8 @@ def scan(request):
         "target": url,
         "links":   [],
         "headers": {},
-        "xss":     False,
-        "sqli":    False,
+        "xss":     {"vulnerable": False, "findings": []},
+        "sqli":    {"vulnerable": False, "findings": []},
         "dns":     {},
         "whois":   {},
         "ports":   {},
@@ -85,7 +85,7 @@ def scan(request):
             except Exception as e:
                 # Simpan error per modul, jangan crash seluruh scan
                 if key in ("xss", "sqli"):
-                    results[key] = False
+                    results[key] = {"vulnerable": False, "findings": [], "error": str(e)}
                 elif key in ("links", "api"):
                     results[key] = []
                 elif key in ("ports", "headers"):
