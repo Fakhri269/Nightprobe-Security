@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NightProbe â€” Web Security Scanner</title>
+<title>NightProbe — Web Security Scanner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -79,9 +79,9 @@ main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:
 .chip{font-family:var(--mono);font-size:.54rem;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border:1px solid var(--b);color:var(--tl);display:inline-flex;align-items:center;gap:5px}
 .chip::before{content:'';display:inline-block;width:4px;height:4px;background:var(--c);opacity:.4;flex-shrink:0}
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════
    HACKER LOADING
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════ */
 #progressSection{display:none;margin-top:24px;padding-top:22px;border-top:1px solid var(--b)}
 .hk-wrap{background:#000;border:1px solid rgba(0,195,255,.2);position:relative;overflow:hidden}
 .hk-wrap::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
@@ -117,7 +117,7 @@ main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:
 .hk-pct{font-family:var(--mono);font-size:.58rem;color:var(--c);min-width:36px;text-align:right;flex-shrink:0}
 .hk-mod{font-family:var(--mono);font-size:.52rem;color:rgba(0,195,255,.28);letter-spacing:2px;flex-shrink:0}
 
-/* â”€â”€â”€ RESULTS â”€â”€â”€ */
+/* ─── RESULTS ─── */
 #resultsSection{display:none;margin-top:24px;padding-top:22px;border-top:1px solid var(--b)}
 .sechd{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-family:var(--mono);font-size:.55rem;letter-spacing:4px;text-transform:uppercase;color:var(--tm)}
 .sechd-ico{width:18px;height:18px;color:var(--c)}.sechd-ico svg{width:100%;height:100%;fill:currentColor}
@@ -336,7 +336,7 @@ footer{position:relative;z-index:1;margin-top:60px;padding:22px 0;border-top:1px
   <div class="hero">
     <div class="hero-eye">Advanced Web Security Intelligence</div>
     <h1>NIGHT<br><span class="glow-text">PROBE</span></h1>
-    <p class="hero-desc">Pemindai keamanan web komprehensif â€” analisis DNS, WHOIS, SSL, headers, teknologi, port, XSS, SQLi, dan API endpoint dalam satu klik.</p>
+    <p class="hero-desc">Pemindai keamanan web komprehensif — analisis DNS, WHOIS, SSL, headers, teknologi, port, XSS, SQLi, dan API endpoint dalam satu klik.</p>
     <div class="hero-pills">
       <span class="hpill">DNS Lookup</span><span class="hpill">WHOIS</span><span class="hpill">SSL Analysis</span>
       <span class="hpill">Security Headers</span><span class="hpill">Port Scan</span><span class="hpill">XSS Detection</span>
@@ -352,7 +352,7 @@ footer{position:relative;z-index:1;margin-top:60px;padding:22px 0;border-top:1px
       </div>
       <div class="tbody">
         <div class="inrow">
-          <div class="inpre">TARGET â†’<span class="cblink"></span></div>
+          <div class="inpre">TARGET →<span class="cblink"></span></div>
           <input type="text" id="urlInput" placeholder="https://target.com" autocomplete="off" spellcheck="false">
           <button id="scanBtn" onclick="runScan()">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -411,7 +411,7 @@ footer{position:relative;z-index:1;margin-top:60px;padding:22px 0;border-top:1px
           <div id="sqliSection" style="display:none;margin-bottom:24px">
             <div class="sechd" style="margin-bottom:12px">
               <span class="sechd-ico" style="color:var(--r)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-2 5H6v-3h12v3zM20 4H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 5H6V6h12v3z"/></svg></span>
-              SQL INJECTION â€” DETAIL CELAH<div class="sechd-line"></div>
+              SQL INJECTION — DETAIL CELAH<div class="sechd-line"></div>
               <span class="sechd-count" id="sqliCount" style="background:var(--rg);border-color:rgba(255,45,74,.2);color:var(--r)">0 celah</span>
             </div>
             <div id="sqliFindings"></div>
@@ -421,7 +421,7 @@ footer{position:relative;z-index:1;margin-top:60px;padding:22px 0;border-top:1px
           <div id="xssSection" style="display:none;margin-bottom:24px">
             <div class="sechd" style="margin-bottom:12px">
               <span class="sechd-ico" style="color:var(--r)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 3l2 2-4 4 4 4-2 2-6-6 6-6zm-8 9l-2-2 4-4-4-4 2-2 6 6-6 6z"/></svg></span>
-              XSS â€” DETAIL CELAH<div class="sechd-line"></div>
+              XSS — DETAIL CELAH<div class="sechd-line"></div>
               <span class="sechd-count" id="xssCount" style="background:var(--rg);border-color:rgba(255,45,74,.2);color:var(--r)">0 celah</span>
             </div>
             <div id="xssFindings"></div>
@@ -473,7 +473,7 @@ function startMatrix(){
   const ctx=cv.getContext('2d');
   const cols=Math.floor(cv.width/13);
   const drops=Array(cols).fill(1);
-  const chars='ã‚¢ã‚¤ã‚¦ã‚¨ã‚ªã‚«ã‚­ã‚¯ã‚±ã‚³01ã‚¢BCDEF!@#xSSQLiDNS'.split('');
+  const chars='アイウエオカキクケコ01アBCDEF!@#xSSQLiDNS'.split('');
   function draw(){
     ctx.fillStyle='rgba(0,0,0,.06)';ctx.fillRect(0,0,cv.width,cv.height);
     ctx.font='11px IBM Plex Mono';
@@ -499,15 +499,15 @@ function stopMatrix(){
 function buildLines(host){
   return[
     {type:'cmd',ps:'root@np',cmd:'nmap',args:`-sV -T4 --open ${host}`},
-    {type:'out',text:`Starting Nmap 7.94 â€” target: ${host}`,badge:'info'},
+    {type:'out',text:`Starting Nmap 7.94 — target: ${host}`,badge:'info'},
     {type:'cmd',ps:'root@np',cmd:'dig',args:`+short ${host} A AAAA MX`},
     {type:'out',text:'DNS A record resolved successfully',badge:'ok'},
     {type:'cmd',ps:'root@np',cmd:'whois',args:host},
     {type:'out',text:'WHOIS: registrar and expiry data retrieved',badge:'ok'},
     {type:'cmd',ps:'root@np',cmd:'openssl',args:`s_client -connect ${host}:443 -brief`},
-    {type:'out',text:'TLS 1.3 handshake OK â€” certificate verified',badge:'ok'},
+    {type:'out',text:'TLS 1.3 handshake OK — certificate verified',badge:'ok'},
     {type:'cmd',ps:'root@np',cmd:'curl',args:`-sI --max-time 8 https://${host}`},
-    {type:'out',text:'HTTP/2 200 â€” security headers captured',badge:'ok'},
+    {type:'out',text:'HTTP/2 200 — security headers captured',badge:'ok'},
     {type:'cmd',ps:'root@np',cmd:'python3',args:`xss_probe.py --target ${host} --level 2`},
     {type:'out',text:'Injecting 48 XSS payloads into forms and params',badge:'warn'},
     {type:'cmd',ps:'root@np',cmd:'sqlmap',args:`-u https://${host} --batch --level=1 -q`},
@@ -517,7 +517,7 @@ function buildLines(host){
     {type:'cmd',ps:'root@np',cmd:'python3',args:`api_probe.py --host ${host} --wordlist common`},
     {type:'out',text:'API endpoint discovery done',badge:'ok'},
     {type:'cmd',ps:'root@np',cmd:'python3',args:`nightprobe/report.py --compile --out /tmp/result.json`},
-    {type:'out',text:'All modules complete â€” compiling final report',badge:'ok'},
+    {type:'out',text:'All modules complete — compiling final report',badge:'ok'},
   ];
 }
 
@@ -554,7 +554,7 @@ async function animateHacker(host){
       addHkLine(`<span class="hk-ps">${l.ps}:~#&nbsp;</span><span class="hk-cmd">${l.cmd}</span>&nbsp;<span class="hk-arg">${l.args}</span><span class="hk-cursor"></span>`);
     } else {
       const bc=l.badge==='ok'?'ok':l.badge==='warn'?'warn':l.badge==='err'?'err':'info';
-      addHkLine(`<span class="hk-ps">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;â””â”€&nbsp;</span><span class="hk-out">${l.text}</span><span class="hk-badge ${bc}">${l.badge.toUpperCase()}</span>`);
+      addHkLine(`<span class="hk-ps">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─&nbsp;</span><span class="hk-out">${l.text}</span><span class="hk-badge ${bc}">${l.badge.toUpperCase()}</span>`);
     }
   }
 }
@@ -578,7 +578,7 @@ async function runScan(){
 
   const[,data]=await Promise.all([
     animateHacker(host),
-    fetch(`/scan/?url=${encodeURIComponent(url)}`).then(r=>r.json()).catch(e=>({error:e.message}))
+    fetch(`https://zetianus-nightprobe-backend.hf.space/scan/?url=${encodeURIComponent(url)}`).then(r=>r.json()).catch(e=>({error:e.message}))
   ]);
 
   setHkProg(100,9);
@@ -594,23 +594,23 @@ async function runScan(){
 
 // Metadata
 const PDATA={
-  21:{name:'FTP',desc:'File Transfer Protocol â€” risiko credentials plaintext',risk:'HIGH'},
-  22:{name:'SSH',desc:'Secure Shell â€” akses remote terenkripsi',risk:'MED'},
-  23:{name:'Telnet',desc:'Remote access tidak terenkripsi â€” BAHAYA',risk:'CRIT'},
-  25:{name:'SMTP',desc:'Email server â€” potensi open relay',risk:'MED'},
+  21:{name:'FTP',desc:'File Transfer Protocol — risiko credentials plaintext',risk:'HIGH'},
+  22:{name:'SSH',desc:'Secure Shell — akses remote terenkripsi',risk:'MED'},
+  23:{name:'Telnet',desc:'Remote access tidak terenkripsi — BAHAYA',risk:'CRIT'},
+  25:{name:'SMTP',desc:'Email server — potensi open relay',risk:'MED'},
   53:{name:'DNS',desc:'Domain Name System resolver',risk:'LOW'},
   80:{name:'HTTP',desc:'Web server tanpa enkripsi',risk:'MED'},
   110:{name:'POP3',desc:'Email retrieval protocol',risk:'MED'},
   143:{name:'IMAP',desc:'Internet Message Access Protocol',risk:'MED'},
-  443:{name:'HTTPS',desc:'Secure web â€” terenkripsi TLS',risk:'LOW'},
-  3306:{name:'MySQL',desc:'Database MySQL exposed â€” BERBAHAYA',risk:'CRIT'},
+  443:{name:'HTTPS',desc:'Secure web — terenkripsi TLS',risk:'LOW'},
+  3306:{name:'MySQL',desc:'Database MySQL exposed — BERBAHAYA',risk:'CRIT'},
   5432:{name:'PostgreSQL',desc:'Database PostgreSQL exposed',risk:'CRIT'},
-  6379:{name:'Redis',desc:'Redis cache â€” sering tanpa auth',risk:'CRIT'},
+  6379:{name:'Redis',desc:'Redis cache — sering tanpa auth',risk:'CRIT'},
   8080:{name:'HTTP-Alt',desc:'Port web alternatif / dev server',risk:'MED'},
   8443:{name:'HTTPS-Alt',desc:'HTTPS pada port alternatif',risk:'LOW'},
-  27017:{name:'MongoDB',desc:'MongoDB tanpa auth â€” CRIT',risk:'CRIT'},
+  27017:{name:'MongoDB',desc:'MongoDB tanpa auth — CRIT',risk:'CRIT'},
   5000:{name:'Dev Server',desc:'Development server (Flask/Node)',risk:'HIGH'},
-  9200:{name:'Elasticsearch',desc:'Elastic tanpa auth â€” data exposed',risk:'CRIT'},
+  9200:{name:'Elasticsearch',desc:'Elastic tanpa auth — data exposed',risk:'CRIT'},
 };
 const HDATA={
   'Content-Security-Policy':{explain:'Mencegah XSS & code injection.',why:'Tanpa CSP, browser bisa menjalankan script berbahaya.'},
@@ -621,17 +621,17 @@ const HDATA={
   'Referrer-Policy':{explain:'Mengontrol informasi referrer saat navigasi.',why:'Mencegah bocornya URL sensitif ke link eksternal.'},
 };
 const CAT_META={
-  server:{icon:'ðŸ–¥',label:'Web Server',color:'var(--c)'},
-  cdn:{icon:'â˜',label:'CDN / Proxy',color:'var(--y)'},
-  backend:{icon:'âš™',label:'Backend Framework',color:'var(--p)'},
-  cms:{icon:'ðŸ“',label:'CMS Platform',color:'var(--g)'},
-  frontend:{icon:'ðŸŽ¨',label:'Frontend',color:'#80d4f5'},
-  analytics:{icon:'ðŸ“Š',label:'Analytics',color:'var(--tm)'},
-  security:{icon:'ðŸ›¡',label:'Security / WAF',color:'var(--r)'},
+  server:{icon:'🖥',label:'Web Server',color:'var(--c)'},
+  cdn:{icon:'☁',label:'CDN / Proxy',color:'var(--y)'},
+  backend:{icon:'⚙',label:'Backend Framework',color:'var(--p)'},
+  cms:{icon:'📝',label:'CMS Platform',color:'var(--g)'},
+  frontend:{icon:'🎨',label:'Frontend',color:'#80d4f5'},
+  analytics:{icon:'📊',label:'Analytics',color:'var(--tm)'},
+  security:{icon:'🛡',label:'Security / WAF',color:'var(--r)'},
 };
 
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function fmt(d){if(!d||['None','null','undefined'].includes(String(d)))return'â€“';try{const dt=new Date(d);return isNaN(dt)?String(d).split('T')[0]||'â€“':dt.toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'});}catch{return String(d).split('T')[0]||'â€“';}}
+function fmt(d){if(!d||['None','null','undefined'].includes(String(d)))return'–';try{const dt=new Date(d);return isNaN(dt)?String(d).split('T')[0]||'–':dt.toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'});}catch{return String(d).split('T')[0]||'–';}}
 function isExpSoon(d){if(!d)return false;try{return((new Date(d)-new Date())/86400000)<60;}catch{return false;}}
 function exDomain(url){try{return new URL(url).hostname;}catch{return url;}}
 
@@ -668,12 +668,12 @@ function renderFindings(containerId, findings, type){
           <div class="finding-main" onclick="toggleFinding('${type}',${i})">
             <span class="finding-param">?${esc(f.param)}</span>
             <span class="finding-url" title="${esc(f.url)}">${esc(f.url)}</span>
-            <span class="finding-err">${esc(f.error||f.payload||'â€”')}</span>
+            <span class="finding-err">${esc(f.error||f.payload||'—')}</span>
           </div>
           <div class="finding-detail" id="fd-${type}-${i}">
             <div class="fd-row">
               <span class="fd-key">Parameter</span>
-              <span class="fd-val"><span style="color:var(--r);font-weight:600">?${esc(f.param)}</span> â€” titik injeksi terdeteksi</span>
+              <span class="fd-val"><span style="color:var(--r);font-weight:600">?${esc(f.param)}</span> — titik injeksi terdeteksi</span>
             </div>
             <div class="fd-row">
               <span class="fd-key">URL</span>
@@ -686,14 +686,14 @@ function renderFindings(containerId, findings, type){
             ${f.error?`<div class="fd-row"><span class="fd-key">Error / Bukti</span><span class="fd-val" style="color:var(--y)">${esc(f.error)}</span></div>`:''}
             <div class="fd-row">
               <span class="fd-key">Fix</span>
-              <span class="fd-val fix">âœ… ${esc(f.fix)}</span>
+              <span class="fd-val fix">✅ ${esc(f.fix)}</span>
             </div>
           </div>
         </div>
       `).join('')}
     </div>
     <div style="margin-top:8px;font-family:var(--mono);font-size:.55rem;color:var(--tm);padding:8px 12px;background:var(--s2);border:1px solid var(--b)">
-      â–¶ Klik baris untuk melihat detail payload, URL lengkap, dan cara perbaikan.
+      ▶ Klik baris untuk melihat detail payload, URL lengkap, dan cara perbaikan.
     </div>`;
 }
 
@@ -704,7 +704,7 @@ function toggleFinding(type, idx){
 
 function renderResults(data){
   if(data.error){
-    document.getElementById('scoreSection').innerHTML=`<div class="ebox">âš  ${esc(data.error)}</div>`;
+    document.getElementById('scoreSection').innerHTML=`<div class="ebox">⚠ ${esc(data.error)}</div>`;
     ['reconGrid','sslSection','hdrsSection','techSection','portSection','apiSection','linksWrap'].forEach(id=>document.getElementById(id).innerHTML='');
     return;
   }
@@ -751,10 +751,10 @@ function renderResults(data){
     <div class="score-desc">${SDESC}</div>
   </div>
   <div class="bento">
-    ${bc(xss?'danger':'safe','M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 3l2 2-4 4 4 4-2 2-6-6 6-6zm-8 9l-2-2 4-4-4-4 2-2 6 6-6 6z',xss?'!':'âœ“','XSS INJECTION',xss?'TERDETEKSI':'AMAN',xss?'Ditemukan '+xssFindings.length+' titik XSS!':'Tidak ada kerentanan XSS terdeteksi.')}
-    ${bc(sqli?'danger':'safe','M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-2 5H6v-3h12v3zM20 4H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 5H6V6h12v3z',sqli?'!':'âœ“','SQL INJECTION',sqli?'TERDETEKSI':'AMAN',sqli?'Ditemukan '+sqliFindings.length+' celah SQLi!':'Tidak ada SQL injection yang berhasil.')}
+    ${bc(xss?'danger':'safe','M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 3l2 2-4 4 4 4-2 2-6-6 6-6zm-8 9l-2-2 4-4-4-4 2-2 6 6-6 6z',xss?'!':'✓','XSS INJECTION',xss?'TERDETEKSI':'AMAN',xss?'Ditemukan '+xssFindings.length+' titik XSS!':'Tidak ada kerentanan XSS terdeteksi.')}
+    ${bc(sqli?'danger':'safe','M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-2 5H6v-3h12v3zM20 4H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 5H6V6h12v3z',sqli?'!':'✓','SQL INJECTION',sqli?'TERDETEKSI':'AMAN',sqli?'Ditemukan '+sqliFindings.length+' celah SQLi!':'Tidak ada SQL injection yang berhasil.')}
     ${bc(miss>2?'warn':'safe','M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z',miss,'HTTP HEADERS',miss>2?'PERLU PERBAIKAN':'CUKUP BAIK',miss===0?'Semua header keamanan terpasang.':miss+' dari 6 security header belum dikonfigurasi.')}
-    ${bc(ssl.valid?'safe':'danger','M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z',ssl.valid?'âœ“':'âœ—','SSL CERTIFICATE',ssl.valid?'VALID':'TIDAK VALID',ssl.valid?'Sertifikat SSL aktif & terenkripsi.':'SSL tidak valid â€” koneksi tidak terenkripsi!')}
+    ${bc(ssl.valid?'safe':'danger','M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z',ssl.valid?'✓':'✗','SSL CERTIFICATE',ssl.valid?'VALID':'TIDAK VALID',ssl.valid?'Sertifikat SSL aktif & terenkripsi.':'SSL tidak valid — koneksi tidak terenkripsi!')}
     ${bc(openP>3?'warn':'info','M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z',openP,'OPEN PORTS',openP>5?'PERHATIKAN':'INFO',openP===0?'Tidak ada port terbuka.':'Ditemukan '+openP+' port terbuka.')}
     ${bc('info','M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z',api.length,'API ENDPOINTS','DITEMUKAN',api.length===0?'Tidak ada API endpoint publik.':'Ditemukan '+api.length+' endpoint API.')}
     ${bc('purple','M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3z',tCount,'TECH DETECTED','INFO',tCount===0?'Teknologi tidak terdeteksi.':tCount+' teknologi teridentifikasi.')}
@@ -764,19 +764,19 @@ function renderResults(data){
 
   // RECON
   const dnsRows=dns.error?`<div class="irow"><span class="ik">error</span><span class="iv bad">${esc(dns.error)}</span></div>`
-    :`<div class="irow"><span class="ik">Hostname</span><span class="iv">${esc(dns.hostname||'â€“')}</span></div>
-     <div class="irow"><span class="ik">IP Utama</span><span class="iv ok">${esc(dns.ip||'â€“')}</span></div>
+    :`<div class="irow"><span class="ik">Hostname</span><span class="iv">${esc(dns.hostname||'–')}</span></div>
+     <div class="irow"><span class="ik">IP Utama</span><span class="iv ok">${esc(dns.ip||'–')}</span></div>
      ${(dns.all_ips||[]).length>1?`<div class="irow"><span class="ik">Semua IP</span><span class="iv dim">${esc(dns.all_ips.join(', '))}</span></div>`:''}
-     <div class="irow-note">ðŸ’¡ IP address menunjukkan server atau load balancer yang mengelola domain ini.</div>`;
+     <div class="irow-note">💡 IP address menunjukkan server atau load balancer yang mengelola domain ini.</div>`;
 
-  const ns=Array.isArray(whois.name_servers)?whois.name_servers.slice(0,4).join('<br>'):(whois.name_servers||'â€“');
+  const ns=Array.isArray(whois.name_servers)?whois.name_servers.slice(0,4).join('<br>'):(whois.name_servers||'–');
   const whoisRows=whois.error?`<div class="irow"><span class="ik">error</span><span class="iv bad">${esc(whois.error)}</span></div>`
-    :`<div class="irow"><span class="ik">Registrar</span><span class="iv">${esc(whois.registrar||'â€“')}</span></div>
-     <div class="irow"><span class="ik">Organisasi</span><span class="iv">${esc(whois.org||'â€“')}</span></div>
+    :`<div class="irow"><span class="ik">Registrar</span><span class="iv">${esc(whois.registrar||'–')}</span></div>
+     <div class="irow"><span class="ik">Organisasi</span><span class="iv">${esc(whois.org||'–')}</span></div>
      <div class="irow"><span class="ik">Terdaftar</span><span class="iv ok">${fmt(whois.creation_date)}</span></div>
      <div class="irow"><span class="ik">Kadaluarsa</span><span class="iv ${isExpSoon(whois.expiration_date)?'warn':''}">${fmt(whois.expiration_date)}</span></div>
      <div class="irow"><span class="ik">Nameserver</span><span class="iv" style="font-size:.6rem;line-height:1.8">${ns}</span></div>
-     <div class="irow-note">ðŸ’¡ Domain mendekati expiry perlu segera diperpanjang.</div>`;
+     <div class="irow-note">💡 Domain mendekati expiry perlu segera diperpanjang.</div>`;
 
   document.getElementById('reconGrid').innerHTML=`
     <div class="icard"><div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><span class="icard-title">DNS Lookup</span></div>${dns.error?'<span class="icard-badge bad">Error</span>':'<span class="icard-badge ok">Resolved</span>'}</div>${dnsRows}</div>
@@ -784,7 +784,7 @@ function renderResults(data){
 
   // SSL
   if(ssl.error){
-    document.getElementById('sslSection').innerHTML=`<div class="ebox" style="margin-bottom:24px">âš  SSL Error: ${esc(ssl.error)}</div>`;
+    document.getElementById('sslSection').innerHTML=`<div class="ebox" style="margin-bottom:24px">⚠ SSL Error: ${esc(ssl.error)}</div>`;
   } else if(ssl.valid){
     const d=ssl.days_remaining||0;const dc=d<30?'#ff2d4a':d<60?'#ffcc00':'#00e57a';
     const dpct=Math.min(100,Math.round((d/365)*100));
@@ -798,48 +798,48 @@ function renderResults(data){
           <text x="65" y="75" text-anchor="middle" fill="var(--tm)" font-family="IBM Plex Mono" font-size="6" letter-spacing="2">HARI TERSISA</text>
         </svg>
         <div class="ssl-dial-lbl">Validitas Sertifikat</div>
-        <div style="font-family:var(--mono);font-size:.6rem;color:${dc};border:1px solid ${dc};padding:2px 10px;background:${dc}22">${d<30?'âš  HAMPIR EXPIRY':d<60?'PERLU PERHATIAN':'MASIH VALID'}</div>
+        <div style="font-family:var(--mono);font-size:.6rem;color:${dc};border:1px solid ${dc};padding:2px 10px;background:${dc}22">${d<30?'⚠ HAMPIR EXPIRY':d<60?'PERLU PERHATIAN':'MASIH VALID'}</div>
       </div>
       <div class="icard">
-        <div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><span class="icard-title">Detail Sertifikat</span></div><span class="icard-badge ok">âœ“ Valid</span></div>
-        <div class="irow"><span class="ik">Subject</span><span class="iv">${esc(ssl.subject||'â€“')}</span></div>
-        <div class="irow"><span class="ik">Issuer / CA</span><span class="iv ok">${esc(ssl.issuer||'â€“')}</span></div>
-        <div class="irow"><span class="ik">Diterbitkan</span><span class="iv dim">${esc(ssl.issued_on||'â€“')}</span></div>
-        <div class="irow"><span class="ik">Kadaluarsa</span><span class="iv" style="color:${dc}">${esc(ssl.expires||'â€“')}</span></div>
+        <div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><span class="icard-title">Detail Sertifikat</span></div><span class="icard-badge ok">✓ Valid</span></div>
+        <div class="irow"><span class="ik">Subject</span><span class="iv">${esc(ssl.subject||'–')}</span></div>
+        <div class="irow"><span class="ik">Issuer / CA</span><span class="iv ok">${esc(ssl.issuer||'–')}</span></div>
+        <div class="irow"><span class="ik">Diterbitkan</span><span class="iv dim">${esc(ssl.issued_on||'–')}</span></div>
+        <div class="irow"><span class="ik">Kadaluarsa</span><span class="iv" style="color:${dc}">${esc(ssl.expires||'–')}</span></div>
         <div class="irow"><span class="ik">Sisa Hari</span><span class="iv" style="color:${dc}">${d} hari</span></div>
       </div>
       <div class="icard">
         <div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h10c2.76 0 5-2.24 5-5s-2.24-5-5-5zM7 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg></div><span class="icard-title">Koneksi TLS</span></div></div>
-        <div class="irow"><span class="ik">Versi TLS</span><span class="iv ok">${esc(ssl.tls_version||'â€“')}</span></div>
-        <div class="irow"><span class="ik">Cipher</span><span class="iv dim" style="font-size:.58rem">${esc(ssl.cipher||'â€“')}</span></div>
+        <div class="irow"><span class="ik">Versi TLS</span><span class="iv ok">${esc(ssl.tls_version||'–')}</span></div>
+        <div class="irow"><span class="ik">Cipher</span><span class="iv dim" style="font-size:.58rem">${esc(ssl.cipher||'–')}</span></div>
         <div class="irow"><span class="ik">SAN</span><span class="iv">${(ssl.san||[]).length} domain</span></div>
         ${ssl.san&&ssl.san.length?`<div class="irow"><span class="ik">Domain SANs</span><span class="iv dim" style="font-size:.58rem;line-height:1.8">${ssl.san.slice(0,5).map(esc).join('<br>')}</span></div>`:''}
       </div>
     </div>`;
     setTimeout(()=>{const a=document.getElementById('sslArc');if(a)a.style.strokeDashoffset=DOFF;},200);
   } else {
-    document.getElementById('sslSection').innerHTML=`<div class="ebox" style="margin-bottom:24px">âš  Tidak ada sertifikat SSL valid â€” koneksi tidak terenkripsi!</div>`;
+    document.getElementById('sslSection').innerHTML=`<div class="ebox" style="margin-bottom:24px">⚠ Tidak ada sertifikat SSL valid — koneksi tidak terenkripsi!</div>`;
   }
 
   // Headers
   const HLIST=['Content-Security-Policy','Strict-Transport-Security','X-Frame-Options','X-Content-Type-Options','X-XSS-Protection','Referrer-Policy'];
   const extraChecks=[
     {name:'XSS Detection',state:xss?'fail':'ok',explain:'Hasil pengujian Cross-Site Scripting.',why:xss?'Script injection berhasil pada '+xssFindings.length+' parameter.':'Tidak ada XSS terdeteksi.'},
-    {name:'SQL Injection Test',state:sqli?'fail':'ok',explain:'Hasil pengujian SQL Injection.',why:sqli?'SQL Injection ditemukan pada '+sqliFindings.length+' parameter â€” gunakan prepared statements.':'Database terlindungi.'},
+    {name:'SQL Injection Test',state:sqli?'fail':'ok',explain:'Hasil pengujian SQL Injection.',why:sqli?'SQL Injection ditemukan pada '+sqliFindings.length+' parameter — gunakan prepared statements.':'Database terlindungi.'},
   ];
   const allHeaders=[...extraChecks,...HLIST.map(h=>({name:h,state:H[h]==='present'?'ok':'miss',explain:HDATA[h]?.explain||'',why:HDATA[h]?.why||''}))];
   document.getElementById('hdrsSection').innerHTML=`<div class="hdrs-wrap">${
     allHeaders.map(h=>`<div class="hdr-row">
-      <div class="hdr-left"><div class="hdr-name">${h.name}</div>${h.explain?`<div class="hdr-explain">${h.explain}</div>`:''}${h.why?`<div class="hdr-explain" style="color:${h.state==='fail'?'var(--r)':h.state==='miss'?'var(--y)':'var(--g)'}">â†’ ${h.why}</div>`:''}</div>
-      <div class="hdr-bar-cell"><div class="hdr-track"><div class="hdr-fill ${h.state}"></div></div><div class="hdr-bar-lbl">${h.state==='ok'?'âœ“ Aktif':h.state==='fail'?'âœ— Rentan':'â€” Tidak ada'}</div></div>
+      <div class="hdr-left"><div class="hdr-name">${h.name}</div>${h.explain?`<div class="hdr-explain">${h.explain}</div>`:''}${h.why?`<div class="hdr-explain" style="color:${h.state==='fail'?'var(--r)':h.state==='miss'?'var(--y)':'var(--g)'}">→ ${h.why}</div>`:''}</div>
+      <div class="hdr-bar-cell"><div class="hdr-track"><div class="hdr-fill ${h.state}"></div></div><div class="hdr-bar-lbl">${h.state==='ok'?'✓ Aktif':h.state==='fail'?'✗ Rentan':'— Tidak ada'}</div></div>
       <div class="hdr-badge-cell"><div class="hdrbadge ${h.state}">${h.state==='ok'?'PASS':h.state==='fail'?'FAIL':'MISS'}</div></div>
     </div>`).join('')
   }</div>`;
 
-  // â”€â”€â”€ SQLI FINDINGS DETAIL â”€â”€â”€
+  // ─── SQLI FINDINGS DETAIL ───
   renderFindings('sqliFindings', sqliFindings, 'sqli');
 
-  // â”€â”€â”€ XSS FINDINGS DETAIL â”€â”€â”€
+  // ─── XSS FINDINGS DETAIL ───
   renderFindings('xssFindings', xssFindings, 'xss');
 
   // Tech
@@ -847,7 +847,7 @@ function renderResults(data){
   const CAT_ORDER=['server','cdn','backend','cms','frontend','analytics','security'];
   if(techAll.length){
     const cats=CAT_ORDER.filter(c=>(tech[c]||[]).length>0);
-    document.getElementById('techSection').innerHTML=`<div class="tech-grid" style="margin-bottom:24px">${cats.map(c=>{const m=CAT_META[c]||{icon:'â—†',label:c,color:'var(--t)'};return`<div class="tcat"><div class="tcat-hd"><span class="tcat-ico">${m.icon}</span><span class="tcat-name" style="color:${m.color}">${m.label}</span></div><div class="tcat-items">${(tech[c]||[]).map(n=>`<span class="tp ${c}">${esc(n)}</span>`).join('')}</div></div>`;}).join('')}</div>`;
+    document.getElementById('techSection').innerHTML=`<div class="tech-grid" style="margin-bottom:24px">${cats.map(c=>{const m=CAT_META[c]||{icon:'◆',label:c,color:'var(--t)'};return`<div class="tcat"><div class="tcat-hd"><span class="tcat-ico">${m.icon}</span><span class="tcat-name" style="color:${m.color}">${m.label}</span></div><div class="tcat-items">${(tech[c]||[]).map(n=>`<span class="tp ${c}">${esc(n)}</span>`).join('')}</div></div>`;}).join('')}</div>`;
   } else {
     document.getElementById('techSection').innerHTML=`<div class="tech-empty" style="margin-bottom:24px">Tidak dapat mendeteksi teknologi${tech.error?'. Error: '+esc(tech.error):'.'}</div>`;
   }
@@ -860,7 +860,7 @@ function renderResults(data){
       <div class="port-summary">
         <span><span class="dot-open"></span> ${OL.length} Terbuka</span>
         <span><span class="dot-closed"></span> ${PE.length-OL.length} Tertutup</span>
-        ${OL.length>0?`<span style="color:var(--r);border:1px solid rgba(255,45,74,.2);padding:1px 8px;background:var(--rg)">âš  Tutup port yang tidak diperlukan</span>`:''}
+        ${OL.length>0?`<span style="color:var(--r);border:1px solid rgba(255,45,74,.2);padding:1px 8px;background:var(--rg)">⚠ Tutup port yang tidak diperlukan</span>`:''}
       </div>
       <div class="port-grid">${PE.map(([p,s])=>{
         const pd=PDATA[parseInt(p)]||{name:'Unknown',desc:'Port tidak dikenali.',risk:s==='open'?'MED':'LOW'};
@@ -873,7 +873,7 @@ function renderResults(data){
 
   // API
   if(api.length){
-    document.getElementById('apiSection').innerHTML=`<div class="api-wrap"><div class="api-header"><span>Status</span><span>Endpoint</span><span>Content-Type</span><span>Method</span></div>${api.map(ep=>`<div class="api-row"><span><span class="acode ${ep.status_code<300?'s2':'s3'}">${ep.status_code}</span></span><span class="apath">${esc(ep.url)}</span><span class="act">${esc(ep.content_type||'â€“')}</span><span><span class="api-method">GET</span></span></div>`).join('')}</div>`;
+    document.getElementById('apiSection').innerHTML=`<div class="api-wrap"><div class="api-header"><span>Status</span><span>Endpoint</span><span>Content-Type</span><span>Method</span></div>${api.map(ep=>`<div class="api-row"><span><span class="acode ${ep.status_code<300?'s2':'s3'}">${ep.status_code}</span></span><span class="apath">${esc(ep.url)}</span><span class="act">${esc(ep.content_type||'–')}</span><span><span class="api-method">GET</span></span></div>`).join('')}</div>`;
   } else {
     document.getElementById('apiSection').innerHTML=`<div class="empty">Tidak ada endpoint API publik ditemukan.</div>`;
   }
