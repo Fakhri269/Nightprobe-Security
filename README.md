@@ -1,3 +1,12 @@
+---
+title: Nightprobe Backend
+emoji: 🕵️
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+app_port: 7860
+---
 # 🛰️ NightProbe - Web Security Scanner
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
