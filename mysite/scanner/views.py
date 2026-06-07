@@ -78,10 +78,10 @@ def scan(request):
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         future_to_key = {executor.submit(fn): key for key, fn in TASKS.items()}
-        for future in as_completed(future_to_key, timeout=65):
+        for future in as_completed(future_to_key, timeout=25):
             key = future_to_key[future]
             try:
-                results[key] = future.result(timeout=5)
+                results[key] = future.result(timeout=2)
             except Exception as e:
                 # Simpan error per modul, jangan crash seluruh scan
                 if key in ("xss", "sqli"):
