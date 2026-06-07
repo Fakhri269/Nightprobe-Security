@@ -78,19 +78,23 @@ def scan(request):
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         future_to_key = {executor.submit(fn): key for key, fn in TASKS.items()}
-        for future in as_completed(future_to_key, timeout=25):
-            key = future_to_key[future]
-            try:
-                results[key] = future.result(timeout=2)
-            except Exception as e:
-                # Simpan error per modul, jangan crash seluruh scan
-                if key in ("xss", "sqli"):
-                    results[key] = {"vulnerable": False, "findings": [], "error": str(e)}
-                elif key in ("links", "api"):
-                    results[key] = []
-                elif key in ("ports", "headers"):
-                    results[key] = {}
-                else:
-                    results[key] = {"error": str(e)}
+        import concurrent.futures
+        try:
+            for future in as_completed(future_to_key, timeout=25):
+                key = future_to_key[future]
+                try:
+                    results[key] = future.result(timeout=2)
+                except Exception as e:
+                    # Simpan error per modul, jangan crash seluruh scan
+                    if key in ("xss", "sqli"):
+                        results[key] = {"vulnerable": False, "findings": [], "error": str(e)}
+                    elif key in ("links", "api"):
+                        results[key] = []
+                    elif key in ("ports", "headers"):
+                        results[key] = {}
+                    else:
+                        results[key] = {"error": str(e)}
+        except concurrent.futures.TimeoutError:
+            pass
 
     return JsonResponse(results)
