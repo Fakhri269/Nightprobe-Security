@@ -4,453 +4,736 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NightProbe — Web Security Scanner</title>
+<meta name="description" content="Pemindai keamanan web komprehensif — analisis DNS, WHOIS, SSL, headers, teknologi, port, XSS, dan SQLi dalam satu klik.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#020609;--s1:#05090f;--s2:#081018;--s3:#0c1822;--s4:#111f2d;
-  --b:rgba(0,195,255,.06);--bm:rgba(0,195,255,.14);
-  --c:#00c3ff;--cg:rgba(0,195,255,.1);--cd:#004a63;
-  --g:#00e57a;--gg:rgba(0,229,122,.1);--gd:#005a30;
-  --r:#ff2d4a;--rg:rgba(255,45,74,.1);--rd:#6b0015;
-  --y:#ffcc00;--yg:rgba(255,204,0,.1);--yd:#664f00;
-  --o:#ff7730;--p:#c47bff;--pg:rgba(196,123,255,.1);
-  --t:#5a8ca8;--th:#cce5f5;--tl:#183044;--tm:#2a4d64;
-  --mono:'IBM Plex Mono',monospace;--disp:'Orbitron',sans-serif;--body:'DM Sans',sans-serif;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 3px);
-  animation:scanroll 8s linear infinite}
-.gbg{position:fixed;inset:0;z-index:0}
-.gbg::before{content:'';position:absolute;inset:0;
-  background-image:linear-gradient(rgba(0,195,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,195,255,.022) 1px,transparent 1px);
-  background-size:48px 48px}
-.gbg::after{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 55% 30% at 50% 0%,rgba(0,195,255,.07) 0%,transparent 70%),
-    radial-gradient(ellipse 20% 40% at 0% 100%,rgba(0,229,122,.04) 0%,transparent 60%),
-    radial-gradient(ellipse 20% 40% at 100% 100%,rgba(196,123,255,.04) 0%,transparent 60%)}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(2,6,9,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--b)}
-.nlogo{font-family:var(--disp);font-size:1.1rem;letter-spacing:4px;color:#fff;display:flex;align-items:center;gap:12px;font-weight:700}
-.nlogo em{color:var(--c);font-style:normal;text-shadow:0 0 20px rgba(0,195,255,.5)}
-.nlogo-icon{width:28px;height:28px;flex-shrink:0}
-.nlogo-icon svg{width:100%;height:100%;animation:rotateTarget 12s linear infinite}
-.nbadge{font-family:var(--mono);font-size:.55rem;color:var(--tl);letter-spacing:2px;border:1px solid var(--b);padding:2px 8px;background:var(--cg)}
-.nav-right{display:flex;align-items:center;gap:20px}
-.ntime{font-family:var(--mono);font-size:.6rem;color:var(--tm);letter-spacing:1px}
-.nstatus{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.6rem;color:var(--tm);letter-spacing:1.5px}
-.pulse-ring{position:relative;width:10px;height:10px}
-.pulse-ring::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--g);animation:pulseRing 2s ease-out infinite;opacity:0}
-.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);animation:blink 2.5s ease-in-out infinite}
-main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:96px 20px 80px;min-height:100vh}
-.hero{text-align:center;margin-bottom:52px;animation:fadeDown .9s ease both}
-.hero-eye{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.6rem;letter-spacing:5px;text-transform:uppercase;color:var(--c);margin-bottom:28px;opacity:.8}
-.hero-eye::before,.hero-eye::after{content:'';width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c))}
-.hero-eye::after{transform:scaleX(-1)}
-.hero h1{font-family:var(--disp);font-size:clamp(3rem,9vw,7.5rem);letter-spacing:8px;line-height:.9;color:#fff;margin-bottom:20px;font-weight:900}
-.hero h1 .glow-text{color:var(--c);text-shadow:0 0 40px rgba(0,195,255,.4),0 0 80px rgba(0,195,255,.2)}
-.hero-desc{font-family:var(--body);font-size:.82rem;color:var(--t);max-width:500px;margin:0 auto 20px;line-height:1.6}
-.hero-pills{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px}
-.hpill{font-family:var(--mono);font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--tm);border:1px solid var(--b);padding:3px 10px;transition:all .2s}
-.hpill:hover{border-color:var(--bm);color:var(--c);background:var(--cg)}
-.scanbox{width:100%;max-width:860px;animation:fadeUp .9s .15s ease both}
-.twrap{background:var(--s1);border:1px solid var(--b);position:relative;overflow:hidden}
-.twrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent);opacity:.2}
-.thead{display:flex;align-items:center;justify-content:space-between;padding:11px 20px;background:var(--s2);border-bottom:1px solid var(--b)}
-.tdots{display:flex;gap:7px}
-.td{width:11px;height:11px;border-radius:50%}
-.td.r{background:#ff5f57}.td.y{background:#febc2e}.td.g{background:#28c840}
-.tpath{font-family:var(--mono);font-size:.58rem;color:var(--tm)}
-.tbody{padding:28px}
-.inrow{display:flex;align-items:stretch;border:1px solid var(--b);background:var(--s2);transition:all .25s}
-.inrow:focus-within{border-color:rgba(0,195,255,.4);box-shadow:0 0 0 3px rgba(0,195,255,.06)}
-.inpre{display:flex;align-items:center;gap:8px;padding:0 16px;border-right:1px solid var(--b);font-family:var(--mono);font-size:.68rem;color:var(--c);flex-shrink:0;white-space:nowrap}
-.cblink{width:7px;height:14px;background:var(--c);animation:cursorBlink 1.1s step-end infinite;opacity:.9}
-#urlInput{flex:1;background:transparent;border:none;padding:15px 18px;color:var(--th);font-family:var(--mono);font-size:.88rem;outline:none}
-#urlInput::placeholder{color:var(--tl)}
-#scanBtn{background:linear-gradient(135deg,#00a8d8,var(--c));border:none;padding:0 30px;color:#000;font-family:var(--disp);font-size:.75rem;letter-spacing:3px;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:9px;white-space:nowrap;flex-shrink:0;font-weight:700}
-#scanBtn:hover:not(:disabled){box-shadow:0 0 30px rgba(0,195,255,.4)}
-#scanBtn:active:not(:disabled){transform:scale(.98)}
-#scanBtn:disabled{opacity:.25;cursor:not-allowed}
-#scanBtn svg{width:15px;height:15px;fill:currentColor}
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
-.chip{font-family:var(--mono);font-size:.54rem;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border:1px solid var(--b);color:var(--tl);display:inline-flex;align-items:center;gap:5px}
-.chip::before{content:'';display:inline-block;width:4px;height:4px;background:var(--c);opacity:.4;flex-shrink:0}
-
-/* ═══════════════════════════════════
-   HACKER LOADING
-═══════════════════════════════════ */
-#progressSection{display:none;margin-top:24px;padding-top:22px;border-top:1px solid var(--b)}
-.hk-wrap{background:#000;border:1px solid rgba(0,195,255,.2);position:relative;overflow:hidden}
-.hk-wrap::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 17px,rgba(0,195,255,.018) 17px,rgba(0,195,255,.018) 18px)}
-.hk-wrap::after{content:'';position:absolute;top:0;left:0;right:0;height:160px;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse 70% 100% at 50% 0%,rgba(0,195,255,.05),transparent)}
-#matrixCanvas{position:absolute;top:0;left:0;width:100%;height:100%;opacity:.07;pointer-events:none;z-index:0}
-.hk-topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:rgba(0,195,255,.04);border-bottom:1px solid rgba(0,195,255,.1);position:relative;z-index:1}
-.hk-dots-row{display:flex;align-items:center;gap:10px}
-.hk-d{width:9px;height:9px;border-radius:50%}
-.hk-d.r{background:#ff5f57}.hk-d.y{background:#febc2e}.hk-d.g{background:#28c840}
-.hk-title-txt{font-family:var(--mono);font-size:.54rem;letter-spacing:3px;color:rgba(0,195,255,.4);text-transform:uppercase}
-.hk-live{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.52rem;color:rgba(0,229,122,.55);letter-spacing:2px}
-.hk-live-dot{width:5px;height:5px;border-radius:50%;background:var(--g);animation:blink 1s ease-in-out infinite}
-.hk-body{padding:14px 20px;min-height:195px;max-height:195px;overflow:hidden;position:relative;z-index:1;display:flex;flex-direction:column}
-.hk-line{display:flex;gap:8px;align-items:baseline;font-family:var(--mono);font-size:.6rem;line-height:1.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  opacity:0;transform:translateY(4px);transition:opacity .2s ease,transform .2s ease}
-.hk-line.show{opacity:1;transform:translateY(0)}
-.hk-ps{color:rgba(0,195,255,.2);flex-shrink:0;user-select:none}
-.hk-cmd{color:#00c3ff;flex-shrink:0}
-.hk-arg{color:rgba(0,229,122,.7)}
-.hk-out{color:rgba(0,195,255,.5)}
-.hk-badge{font-family:var(--mono);font-size:.5rem;padding:0 6px;border:1px solid;flex-shrink:0;margin-left:6px;line-height:1.7}
-.hk-badge.ok{color:#00e57a;border-color:rgba(0,229,122,.35)}
-.hk-badge.warn{color:#ffcc00;border-color:rgba(255,204,0,.35)}
-.hk-badge.info{color:rgba(0,195,255,.7);border-color:rgba(0,195,255,.25)}
-.hk-badge.err{color:#ff2d4a;border-color:rgba(255,45,74,.35)}
-.hk-cursor{display:inline-block;width:6px;height:11px;background:var(--c);animation:cursorBlink .85s step-end infinite;vertical-align:middle;margin-left:2px;flex-shrink:0}
-.hk-footer{display:flex;align-items:center;gap:14px;padding:9px 20px;border-top:1px solid rgba(0,195,255,.08);position:relative;z-index:1}
-.hk-bar-track{flex:1;height:2px;background:rgba(0,195,255,.07);overflow:hidden;position:relative}
-.hk-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#004a63,#00c3ff);transition:width .5s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(0,195,255,.5);position:relative}
-.hk-bar-fill::after{content:'';position:absolute;right:0;top:0;width:20px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6))}
-.hk-pct{font-family:var(--mono);font-size:.58rem;color:var(--c);min-width:36px;text-align:right;flex-shrink:0}
-.hk-mod{font-family:var(--mono);font-size:.52rem;color:rgba(0,195,255,.28);letter-spacing:2px;flex-shrink:0}
-
-/* ─── RESULTS ─── */
-#resultsSection{display:none;margin-top:24px;padding-top:22px;border-top:1px solid var(--b)}
-.sechd{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-family:var(--mono);font-size:.55rem;letter-spacing:4px;text-transform:uppercase;color:var(--tm)}
-.sechd-ico{width:18px;height:18px;color:var(--c)}.sechd-ico svg{width:100%;height:100%;fill:currentColor}
-.sechd-line{flex:1;height:1px;background:linear-gradient(90deg,var(--b),transparent)}
-.sechd-count{font-size:.6rem;color:var(--c);background:var(--cg);border:1px solid rgba(0,195,255,.15);padding:1px 8px}
-.score-dashboard{display:grid;grid-template-columns:260px 1fr;gap:14px;margin-bottom:24px}
-.score-main{background:var(--s2);border:1px solid var(--b);padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;overflow:hidden}
-.score-main::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent)}
-.score-main::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,195,255,.04),transparent)}
-.score-svg{width:180px;height:180px}.score-svg svg{width:100%;height:100%}
-.score-grade{font-family:var(--disp);font-size:4rem;letter-spacing:4px;line-height:1;font-weight:900;margin-top:-4px}
-.score-label{font-family:var(--mono);font-size:.56rem;letter-spacing:3px;text-transform:uppercase;color:var(--tm)}
-.score-pill{font-family:var(--mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;border:1px solid;margin-top:2px}
-.score-desc{font-family:var(--body);font-size:.72rem;color:var(--t);text-align:center;line-height:1.5;max-width:200px}
-.bento{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.bcard{background:var(--s2);border:1px solid var(--b);padding:16px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;transition:all .22s}
-.bcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.bcard.safe::before{background:linear-gradient(90deg,var(--g),rgba(0,229,122,.3),transparent)}
-.bcard.danger::before{background:linear-gradient(90deg,var(--r),rgba(255,45,74,.3),transparent)}
-.bcard.warn::before{background:linear-gradient(90deg,var(--y),rgba(255,204,0,.3),transparent)}
-.bcard.info::before{background:linear-gradient(90deg,var(--c),rgba(0,195,255,.3),transparent)}
-.bcard.purple::before{background:linear-gradient(90deg,var(--p),rgba(196,123,255,.3),transparent)}
-.bcard:hover{border-color:var(--bm);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.bc-row{display:flex;align-items:center;justify-content:space-between}
-.bc-ico{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:2px}
-.bc-ico svg{width:22px;height:22px}
-.bcard.safe .bc-ico{background:var(--gg);color:var(--g)}.bcard.danger .bc-ico{background:var(--rg);color:var(--r)}
-.bcard.warn .bc-ico{background:var(--yg);color:var(--y)}.bcard.info .bc-ico{background:var(--cg);color:var(--c)}
-.bcard.purple .bc-ico{background:var(--pg);color:var(--p)}
-.bc-badge{font-family:var(--mono);font-size:.52rem;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border:1px solid;flex-shrink:0}
-.bcard.safe .bc-badge{color:var(--g);border-color:rgba(0,229,122,.25);background:var(--gg)}
-.bcard.danger .bc-badge{color:var(--r);border-color:rgba(255,45,74,.25);background:var(--rg)}
-.bcard.warn .bc-badge{color:var(--y);border-color:rgba(255,204,0,.25);background:var(--yg)}
-.bcard.info .bc-badge{color:var(--c);border-color:rgba(0,195,255,.25);background:var(--cg)}
-.bcard.purple .bc-badge{color:var(--p);border-color:rgba(196,123,255,.25);background:var(--pg)}
-.bc-val{font-family:var(--disp);font-size:2.2rem;letter-spacing:2px;line-height:1;font-weight:700}
-.bcard.safe .bc-val{color:var(--g)}.bcard.danger .bc-val{color:var(--r);text-shadow:0 0 20px rgba(255,45,74,.4)}
-.bcard.warn .bc-val{color:var(--y)}.bcard.info .bc-val{color:var(--c)}.bcard.purple .bc-val{color:var(--p)}
-.bc-lbl{font-family:var(--mono);font-size:.54rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm)}
-.bc-desc{font-family:var(--body);font-size:.68rem;color:var(--t);line-height:1.4;border-top:1px solid var(--b);padding-top:8px;margin-top:2px}
-.recon-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
-.icard{background:var(--s2);border:1px solid var(--b);overflow:hidden}
-.icard-hd{padding:10px 16px;border-bottom:1px solid var(--b);background:var(--s3);display:flex;align-items:center;justify-content:space-between;gap:10px}
-.icard-hd-left{display:flex;align-items:center;gap:8px}
-.icard-hd-ico{width:16px;height:16px;color:var(--c)}.icard-hd-ico svg{width:100%;height:100%;fill:currentColor}
-.icard-title{font-family:var(--mono);font-size:.58rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--c)}
-.icard-badge{font-family:var(--mono);font-size:.54rem;letter-spacing:1px;padding:2px 8px;border:1px solid}
-.icard-badge.ok{color:var(--g);border-color:rgba(0,229,122,.2);background:var(--gg)}
-.icard-badge.bad{color:var(--r);border-color:rgba(255,45,74,.2);background:var(--rg)}
-.irow{display:flex;align-items:flex-start;gap:16px;padding:8px 16px;border-bottom:1px solid var(--b)}
-.irow:last-child{border-bottom:none}
-.ik{color:var(--tm);font-family:var(--mono);font-size:.6rem;flex-shrink:0;padding-top:1px;min-width:80px}
-.iv{color:var(--th);font-family:var(--mono);font-size:.65rem;text-align:right;word-break:break-all;flex:1}
-.iv.ok{color:var(--g)}.iv.bad{color:var(--r)}.iv.warn{color:var(--y)}.iv.dim{color:var(--t)}
-.irow-note{font-family:var(--body);font-size:.65rem;color:var(--t);padding:6px 16px 10px;background:rgba(0,195,255,.02);border-bottom:1px solid var(--b);font-style:italic;line-height:1.5}
-.ssl-layout{display:grid;grid-template-columns:210px 1fr 1fr;gap:10px;margin-bottom:24px}
-.ssl-dial{background:var(--s2);border:1px solid var(--b);padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;overflow:hidden}
-.ssl-dial::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent);opacity:.3}
-.ssl-dial svg{width:140px;height:140px}
-.ssl-dial-lbl{font-family:var(--mono);font-size:.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--tm);text-align:center}
-.hdrs-wrap{display:flex;flex-direction:column;margin-bottom:24px;border:1px solid var(--b)}
-.hdr-row{display:grid;grid-template-columns:1fr 200px 90px;align-items:center;border-bottom:1px solid var(--b);overflow:hidden;transition:background .15s}
-.hdr-row:last-child{border-bottom:none}
-.hdr-row:hover{background:var(--s3)}
-.hdr-left{padding:10px 16px;display:flex;flex-direction:column;gap:3px}
-.hdr-name{font-family:var(--mono);font-size:.62rem;color:var(--th)}
-.hdr-explain{font-family:var(--body);font-size:.62rem;color:var(--t);line-height:1.4}
-.hdr-bar-cell{padding:10px 12px;border-left:1px solid var(--b)}
-.hdr-track{height:6px;background:var(--s4);border-radius:3px;overflow:hidden;margin-bottom:4px}
-.hdr-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1)}
-.hdr-fill.ok{background:linear-gradient(90deg,var(--gd),var(--g));box-shadow:0 0 8px rgba(0,229,122,.35);width:100%!important}
-.hdr-fill.miss{width:0!important}
-.hdr-fill.fail{background:linear-gradient(90deg,var(--rd),var(--r));box-shadow:0 0 8px rgba(255,45,74,.35);width:100%!important}
-.hdr-bar-lbl{font-family:var(--mono);font-size:.54rem;color:var(--tm)}
-.hdr-badge-cell{padding:10px 14px;border-left:1px solid var(--b);display:flex;align-items:center;justify-content:center}
-.hdrbadge{font-family:var(--mono);font-size:.54rem;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border:1px solid;white-space:nowrap}
-.hdrbadge.ok{color:var(--g);background:var(--gg);border-color:rgba(0,229,122,.2)}
-.hdrbadge.miss{color:var(--y);background:var(--yg);border-color:rgba(255,204,0,.2)}
-.hdrbadge.fail{color:var(--r);background:var(--rg);border-color:rgba(255,45,74,.2)}
-.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:24px}
-.tcat{background:var(--s2);border:1px solid var(--b);overflow:hidden}
-.tcat-hd{padding:9px 14px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px}
-.tcat-ico{font-size:1rem}
-.tcat-name{font-family:var(--mono);font-size:.56rem;letter-spacing:2.5px;text-transform:uppercase}
-.tcat-items{padding:10px 14px 12px;display:flex;flex-wrap:wrap;gap:5px}
-.tp{font-family:var(--mono);font-size:.6rem;padding:3px 9px;border:1px solid;border-radius:1px}
-.tp.server{border-color:rgba(0,195,255,.22);color:var(--c);background:rgba(0,195,255,.05)}
-.tp.cdn{border-color:rgba(255,204,0,.22);color:var(--y);background:rgba(255,204,0,.05)}
-.tp.backend{border-color:rgba(196,123,255,.22);color:var(--p);background:rgba(196,123,255,.05)}
-.tp.cms{border-color:rgba(0,229,122,.22);color:var(--g);background:rgba(0,229,122,.05)}
-.tp.frontend{border-color:rgba(0,195,255,.12);color:#80d4f5;background:rgba(0,195,255,.03)}
-.tp.analytics{border-color:var(--b);color:var(--tm)}
-.tp.security{border-color:rgba(255,45,74,.22);color:var(--r);background:rgba(255,45,74,.05)}
-.tech-empty{font-family:var(--mono);font-size:.62rem;color:var(--tl);padding:14px 16px;background:var(--s2);border:1px solid var(--b)}
-.port-section{margin-bottom:24px}
-.port-summary{display:flex;align-items:center;gap:20px;margin-bottom:12px;font-family:var(--mono);font-size:.6rem;color:var(--tm)}
-.dot-open{width:8px;height:8px;border-radius:50%;background:var(--r);box-shadow:0 0 6px var(--r);display:inline-block}
-.dot-closed{width:8px;height:8px;border-radius:50%;background:var(--s4);border:1px solid var(--b);display:inline-block}
-.port-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:7px}
-.ptile{background:var(--s2);border:1px solid var(--b);padding:12px 13px;display:flex;flex-direction:column;gap:5px;transition:all .2s;position:relative;overflow:hidden}
-.ptile.open{border-color:rgba(255,45,74,.25);background:rgba(255,45,74,.04)}
-.ptile.open::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--r),transparent);opacity:.5}
-.ptile.closed{opacity:.35}
-.ptile:hover{border-color:var(--bm)}
-.ptile-top{display:flex;align-items:center;justify-content:space-between}
-.ptile-dot{width:6px;height:6px;border-radius:50%}
-.ptile.open .ptile-dot{background:var(--r);box-shadow:0 0 5px var(--r);animation:blink 1.5s ease-in-out infinite}
-.ptile.closed .ptile-dot{background:var(--s4)}
-.ptile-risk{font-family:var(--mono);font-size:.48rem;padding:1px 5px;border:1px solid}
-.ptile.open .ptile-risk{color:var(--r);border-color:rgba(255,45,74,.2)}
-.ptile.closed .ptile-risk{color:var(--tl);border-color:var(--b)}
-.ptile-num{font-family:var(--disp);font-size:1.5rem;letter-spacing:1px;line-height:1;font-weight:700}
-.ptile.open .ptile-num{color:var(--r)}.ptile.closed .ptile-num{color:var(--tl)}
-.ptile-service{font-family:var(--mono);font-size:.54rem;color:var(--tm)}
-.ptile-desc{font-family:var(--body);font-size:.58rem;color:var(--tl);line-height:1.3}
-.api-wrap{margin-bottom:24px;border:1px solid var(--b)}
-.api-header{display:grid;grid-template-columns:60px 1fr 140px 90px;padding:7px 16px;background:var(--s3);border-bottom:1px solid var(--b);font-family:var(--mono);font-size:.53rem;letter-spacing:2px;text-transform:uppercase;color:var(--tm)}
-.api-row{display:grid;grid-template-columns:60px 1fr 140px 90px;align-items:center;padding:9px 16px;border-bottom:1px solid var(--b);font-family:var(--mono);font-size:.63rem;transition:background .15s}
-.api-row:last-child{border-bottom:none}.api-row:hover{background:var(--s2)}
-.acode{padding:2px 8px;font-size:.55rem;border:1px solid;display:inline-block;text-align:center}
-.acode.s2{color:var(--g);background:var(--gg);border-color:rgba(0,229,122,.2)}
-.acode.s3{color:var(--y);background:var(--yg);border-color:rgba(255,204,0,.2)}
-.apath{color:var(--c);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.act{color:var(--tm);font-size:.55rem}
-.api-method{font-family:var(--mono);font-size:.55rem;color:var(--g);padding:1px 6px;border:1px solid rgba(0,229,122,.2);background:var(--gg)}
-.lwrap{max-height:280px;overflow-y:auto;border:1px solid var(--b);scrollbar-width:thin;scrollbar-color:var(--s4) transparent}
-.lrow{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--b);transition:background .15s}
-.lrow:last-child{border-bottom:none}.lrow:hover{background:var(--s2)}
-.ln{color:var(--tl);font-family:var(--mono);font-size:.56rem;flex-shrink:0;min-width:26px}
-.lu{color:var(--c);text-decoration:none;font-family:var(--mono);font-size:.62rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-.lu:hover{text-decoration:underline;color:#40d8ff}
-.lbadge{font-size:.52rem;padding:1px 7px;border:1px solid var(--b);color:var(--tm);flex-shrink:0;font-family:var(--mono)}
-.lbadge.ext{border-color:rgba(0,195,255,.15);color:var(--c)}.lbadge.email{border-color:rgba(0,229,122,.15);color:var(--g)}
-.ebox{display:flex;align-items:flex-start;gap:12px;padding:16px;border:1px solid rgba(255,45,74,.2);background:var(--rg);font-family:var(--mono);font-size:.7rem;color:var(--r);line-height:1.5}
-.empty{font-family:var(--mono);font-size:.62rem;color:var(--tl);padding:16px;background:var(--s2);border:1px solid var(--b)}
-footer{position:relative;z-index:1;margin-top:60px;padding:22px 0;border-top:1px solid var(--b);width:100%;max-width:860px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.ftxt{font-family:var(--mono);font-size:.56rem;color:var(--tl);letter-spacing:1px;line-height:1.6}
-.ftxt strong{color:var(--c)}
-.ghlink{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.6rem;color:var(--tm);text-decoration:none;letter-spacing:1px;padding:7px 16px;border:1px solid var(--b);transition:all .22s;background:var(--s2)}
-.ghlink:hover{color:var(--c);border-color:rgba(0,195,255,.25);background:var(--cg)}
-.ghlink svg{width:14px;height:14px;fill:currentColor}
-
-.findings-wrap{border:1px solid rgba(255,45,74,.2);background:rgba(255,45,74,.02);overflow:hidden}
-.findings-hdr{display:grid;grid-template-columns:100px 1fr 140px;padding:7px 16px;background:rgba(255,45,74,.06);border-bottom:1px solid rgba(255,45,74,.15);font-family:var(--mono);font-size:.52rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,45,74,.6)}
-.finding-row{border-bottom:1px solid rgba(255,45,74,.1);overflow:hidden;transition:background .15s}
-.finding-row:last-child{border-bottom:none}
-.finding-row:hover{background:rgba(255,45,74,.04)}
-.finding-main{display:grid;grid-template-columns:100px 1fr 140px;align-items:center;padding:10px 16px;cursor:pointer}
-.finding-param{font-family:var(--mono);font-size:.7rem;color:var(--r);font-weight:600}
-.finding-url{font-family:var(--mono);font-size:.58rem;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px}
-.finding-err{font-family:var(--mono);font-size:.55rem;color:var(--y);text-align:right;border:1px solid rgba(255,204,0,.2);padding:2px 8px;background:var(--yg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.finding-detail{display:none;padding:12px 16px;background:rgba(0,0,0,.3);border-top:1px solid rgba(255,45,74,.1)}
-.finding-detail.open{display:block}
-.fd-row{display:flex;gap:12px;margin-bottom:7px;align-items:flex-start}
-.fd-key{font-family:var(--mono);font-size:.55rem;color:var(--tm);min-width:80px;padding-top:1px;flex-shrink:0;letter-spacing:1px;text-transform:uppercase}
-.fd-val{font-family:var(--mono);font-size:.6rem;color:var(--th);word-break:break-all;flex:1;line-height:1.5}
-.fd-val.payload{color:#ff7730;background:rgba(255,119,48,.06);padding:3px 8px;border:1px solid rgba(255,119,48,.15)}
-.fd-val.fix{color:#00e57a;background:rgba(0,229,122,.04);padding:6px 10px;border:1px solid rgba(0,229,122,.15);font-family:var(--body);font-size:.65rem;line-height:1.6}
-.fd-val.url-val{color:var(--c);font-size:.55rem}
-.finding-toggle{font-family:var(--mono);font-size:.5rem;color:var(--tm);letter-spacing:1px;border:1px solid var(--b);padding:1px 7px;flex-shrink:0;transition:all .15s}
-.finding-toggle:hover{border-color:var(--r);color:var(--r)}
-.vuln-safe-box{font-family:var(--mono);font-size:.62rem;color:var(--g);padding:14px 16px;background:var(--gg);border:1px solid rgba(0,229,122,.2);display:flex;align-items:center;gap:10px}
-
-@media(max-width:720px){
-  .findings-hdr,.finding-main{grid-template-columns:70px 1fr}
-  .finding-err,.findings-hdr span:last-child{display:none}
+:root {
+  --bg: #f5f5f7;
+  --surface: rgba(255,255,255,0.85);
+  --surface-solid: #ffffff;
+  --surface-2: rgba(255,255,255,0.6);
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.14);
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #aeaeb2;
+  --blue: #0071e3;
+  --blue-light: #e8f1fb;
+  --blue-mid: rgba(0,113,227,0.12);
+  --green: #34c759;
+  --green-light: #edfaf1;
+  --red: #ff3b30;
+  --red-light: #fff1f0;
+  --yellow: #ff9500;
+  --yellow-light: #fff8ec;
+  --purple: #af52de;
+  --purple-light: #f7edfb;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
-@keyframes pulseRing{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.5);opacity:0}}
-@keyframes scanroll{0%{background-position:0 0}100%{background-position:0 100%}}
-@keyframes rotateTarget{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-@media(max-width:720px){
-  nav{padding:0 16px}.tbody{padding:16px}
-  .score-dashboard{grid-template-columns:1fr}.bento{grid-template-columns:repeat(2,1fr)}
-  .ssl-layout{grid-template-columns:1fr}.recon-grid{grid-template-columns:1fr}
-  .hero h1{font-size:3rem}footer{flex-direction:column;align-items:flex-start}
-  .hdr-row{grid-template-columns:1fr 90px}.hdr-bar-cell{display:none}
-  .api-row,.api-header{grid-template-columns:60px 1fr 90px}
+/* ──── NAV ──── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+  background: rgba(245,245,247,0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.92rem; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.nav-logo svg { width: 22px; height: 22px; }
+.nav-badge {
+  font-size: 0.65rem; font-weight: 500;
+  background: var(--blue-mid); color: var(--blue);
+  padding: 2px 8px; border-radius: 20px;
+  letter-spacing: 0.01em;
+}
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.72rem; color: var(--text-secondary);
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 2px rgba(52,199,89,0.25);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(52,199,89,0.25); }
+  50% { box-shadow: 0 0 0 4px rgba(52,199,89,0.12); }
+}
+.nav-time { font-size: 0.72rem; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+/* ──── BACKGROUND GRADIENT ──── */
+.bg-orbs {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.25;
+}
+.orb-1 { width: 600px; height: 600px; top: -200px; left: -100px; background: radial-gradient(circle, #a8d8ff, transparent 70%); }
+.orb-2 { width: 500px; height: 500px; bottom: -150px; right: -100px; background: radial-gradient(circle, #d4abff, transparent 70%); }
+.orb-3 { width: 400px; height: 400px; top: 40%; left: 40%; background: radial-gradient(circle, #b9f0d0, transparent 70%); opacity: 0.15; }
+
+/* ──── MAIN LAYOUT ──── */
+main {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 96px 20px 80px;
+  min-height: 100vh;
+}
+
+/* ──── HERO ──── */
+.hero {
+  text-align: center; margin-bottom: 48px;
+  animation: fade-up 0.7s ease both;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.02em;
+  color: var(--blue); margin-bottom: 20px;
+  background: var(--blue-light); padding: 5px 14px; border-radius: 20px;
+}
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+.hero h1 {
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;
+  color: var(--text-primary); margin-bottom: 18px;
+}
+.hero h1 span { color: var(--blue); }
+.hero-desc {
+  font-size: 1rem; color: var(--text-secondary); max-width: 480px;
+  margin: 0 auto 24px; line-height: 1.65; font-weight: 400;
+}
+.hero-pills { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.pill {
+  font-size: 0.72rem; font-weight: 500; color: var(--text-secondary);
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 5px 13px; border-radius: 20px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+.pill:hover { color: var(--blue); border-color: rgba(0,113,227,0.25); background: var(--blue-light); }
+
+/* ──── SCAN BOX ──── */
+.scanbox {
+  width: 100%; max-width: 800px;
+  animation: fade-up 0.7s 0.1s ease both;
+}
+.scancard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.input-wrap {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 4px 4px 4px 18px;
+  transition: all 0.2s ease;
+}
+.input-wrap:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(0,113,227,0.1);
+  background: #fff;
+}
+.input-prefix {
+  font-size: 0.75rem; font-weight: 500; color: var(--text-tertiary);
+  flex-shrink: 0; letter-spacing: 0.02em; user-select: none;
+}
+#urlInput {
+  flex: 1; background: transparent; border: none;
+  padding: 12px 0; color: var(--text-primary);
+  font-family: var(--font); font-size: 0.95rem; font-weight: 400;
+  outline: none;
+}
+#urlInput::placeholder { color: var(--text-tertiary); }
+#scanBtn {
+  background: var(--blue); border: none; border-radius: 11px;
+  padding: 10px 24px; color: #fff;
+  font-family: var(--font); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s ease;
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+#scanBtn:hover:not(:disabled) { background: #0077ed; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,113,227,0.35); }
+#scanBtn:active:not(:disabled) { transform: translateY(0); }
+#scanBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+#scanBtn svg { width: 15px; height: 15px; fill: currentColor; }
+.scan-modules {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px;
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+.module-chip {
+  font-size: 0.68rem; font-weight: 500; color: var(--text-secondary);
+  background: rgba(0,0,0,0.04); padding: 4px 11px; border-radius: 8px;
+  display: flex; align-items: center; gap: 5px;
+}
+.module-chip::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text-tertiary);
+}
+
+/* ──── PROGRESS ──── */
+#progressSection { display: none; margin-top: 20px; }
+.progress-card {
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.progress-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.progress-title { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+.progress-live {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem; color: var(--green); font-weight: 500;
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+.progress-body {
+  padding: 20px; min-height: 160px; max-height: 160px;
+  overflow: hidden; display: flex; flex-direction: column; gap: 2px;
+}
+.log-line {
+  font-size: 0.78rem; font-family: 'SF Mono', 'Fira Code', monospace;
+  padding: 4px 0; line-height: 1.5; color: var(--text-secondary);
+  opacity: 0; transform: translateY(5px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  display: flex; align-items: center; gap: 8px;
+}
+.log-line.show { opacity: 1; transform: translateY(0); }
+.log-icon { flex-shrink: 0; font-size: 0.7rem; }
+.log-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.log-badge {
+  font-size: 0.62rem; font-weight: 600; padding: 1px 7px; border-radius: 5px;
+  flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.log-badge.ok { background: var(--green-light); color: var(--green); }
+.log-badge.warn { background: var(--yellow-light); color: var(--yellow); }
+.log-badge.info { background: var(--blue-light); color: var(--blue); }
+.log-badge.err { background: var(--red-light); color: var(--red); }
+.progress-footer {
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+}
+.progress-track {
+  flex: 1; height: 4px; background: var(--border);
+  border-radius: 2px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #0071e3, #34a9ff);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-pct { font-size: 0.75rem; font-weight: 600; color: var(--blue); min-width: 36px; text-align: right; }
+.progress-mod { font-size: 0.7rem; color: var(--text-tertiary); }
+
+/* ──── RESULTS ──── */
+#resultsSection { display: none; margin-top: 20px; width: 100%; max-width: 800px; }
+
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; margin-top: 28px;
+}
+.section-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--blue-light); color: var(--blue); flex-shrink: 0;
+}
+.section-icon svg { width: 16px; height: 16px; fill: currentColor; }
+.section-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-count {
+  font-size: 0.72rem; font-weight: 500; color: var(--blue);
+  background: var(--blue-light); padding: 2px 10px; border-radius: 20px;
+}
+
+/* ──── SCORE DASHBOARD ──── */
+.score-dashboard { display: grid; grid-template-columns: 220px 1fr; gap: 14px; }
+.score-main {
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 28px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.score-svg { width: 160px; height: 160px; }
+.score-svg svg { width: 100%; height: 100%; }
+.score-grade { font-size: 3.5rem; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.score-label { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 500; letter-spacing: 0.03em; }
+.score-tag {
+  font-size: 0.75rem; font-weight: 600; padding: 5px 16px;
+  border-radius: 20px; margin-top: 2px;
+}
+.score-desc { font-size: 0.78rem; color: var(--text-secondary); text-align: center; line-height: 1.5; max-width: 180px; }
+
+.bento { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+.bcard {
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: all 0.2s ease; box-shadow: var(--shadow-sm);
+  cursor: default;
+}
+.bcard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.bcard-top { display: flex; align-items: center; justify-content: space-between; }
+.bcard-ico {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+.bcard-ico svg { width: 18px; height: 18px; }
+.bcard-badge {
+  font-size: 0.62rem; font-weight: 600; padding: 3px 9px; border-radius: 7px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.bcard-val { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.bcard-lbl { font-size: 0.68rem; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.02em; }
+.bcard-desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.45; padding-top: 6px; border-top: 1px solid var(--border); }
+
+/* Status colors */
+.safe .bcard-ico { background: var(--green-light); color: var(--green); }
+.safe .bcard-badge { background: var(--green-light); color: var(--green); }
+.safe .bcard-val { color: var(--green); }
+.danger .bcard-ico { background: var(--red-light); color: var(--red); }
+.danger .bcard-badge { background: var(--red-light); color: var(--red); }
+.danger .bcard-val { color: var(--red); }
+.warn .bcard-ico { background: var(--yellow-light); color: var(--yellow); }
+.warn .bcard-badge { background: var(--yellow-light); color: var(--yellow); }
+.warn .bcard-val { color: var(--yellow); }
+.info .bcard-ico { background: var(--blue-light); color: var(--blue); }
+.info .bcard-badge { background: var(--blue-light); color: var(--blue); }
+.info .bcard-val { color: var(--blue); }
+.purple .bcard-ico { background: var(--purple-light); color: var(--purple); }
+.purple .bcard-badge { background: var(--purple-light); color: var(--purple); }
+.purple .bcard-val { color: var(--purple); }
+
+/* ──── INFO CARDS ──── */
+.recon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.icard {
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.icard-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg);
+}
+.icard-header-left { display: flex; align-items: center; gap: 8px; }
+.icard-ico { width: 16px; height: 16px; color: var(--blue); flex-shrink: 0; }
+.icard-ico svg { width: 100%; height: 100%; fill: currentColor; }
+.icard-title { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
+.badge-ok { font-size: 0.67rem; font-weight: 600; background: var(--green-light); color: var(--green); padding: 3px 9px; border-radius: 7px; }
+.badge-err { font-size: 0.67rem; font-weight: 600; background: var(--red-light); color: var(--red); padding: 3px 9px; border-radius: 7px; }
+.irow { display: flex; align-items: flex-start; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.irow:last-child { border-bottom: none; }
+.ik { font-size: 0.72rem; font-weight: 500; color: var(--text-secondary); flex-shrink: 0; min-width: 90px; padding-top: 1px; }
+.iv { font-size: 0.78rem; color: var(--text-primary); word-break: break-all; flex: 1; text-align: right; }
+.iv.ok { color: var(--green); font-weight: 500; }
+.iv.bad { color: var(--red); font-weight: 500; }
+.iv.warn { color: var(--yellow); font-weight: 500; }
+.iv.dim { color: var(--text-secondary); }
+.irow-note {
+  font-size: 0.72rem; color: var(--text-secondary); padding: 8px 16px;
+  background: rgba(0,113,227,0.03); border-bottom: 1px solid var(--border);
+  line-height: 1.5; font-style: italic;
+}
+
+/* ──── SSL ──── */
+.ssl-layout { display: grid; grid-template-columns: 190px 1fr 1fr; gap: 12px; }
+.ssl-dial {
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 24px 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.ssl-dial svg { width: 130px; height: 130px; }
+.ssl-dial-lbl { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); text-align: center; }
+
+/* ──── HEADERS TABLE ──── */
+.hdrs-wrap {
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.hdr-row {
+  display: grid; grid-template-columns: 1fr 160px 80px;
+  align-items: center; border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.hdr-row:last-child { border-bottom: none; }
+.hdr-row:hover { background: var(--bg); }
+.hdr-left { padding: 12px 16px; display: flex; flex-direction: column; gap: 3px; }
+.hdr-name { font-size: 0.8rem; font-weight: 500; color: var(--text-primary); }
+.hdr-explain { font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4; }
+.hdr-bar-cell { padding: 12px; border-left: 1px solid var(--border); }
+.hdr-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 4px; }
+.hdr-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+.hdr-fill.ok { background: var(--green); width: 100% !important; }
+.hdr-fill.miss { width: 0 !important; }
+.hdr-fill.fail { background: var(--red); width: 100% !important; }
+.hdr-bar-lbl { font-size: 0.66rem; color: var(--text-secondary); }
+.hdr-badge-cell { padding: 12px 14px; border-left: 1px solid var(--border); display: flex; align-items: center; justify-content: center; }
+.hdrbadge { font-size: 0.66rem; font-weight: 600; padding: 4px 10px; border-radius: 7px; white-space: nowrap; }
+.hdrbadge.ok { background: var(--green-light); color: var(--green); }
+.hdrbadge.miss { background: var(--yellow-light); color: var(--yellow); }
+.hdrbadge.fail { background: var(--red-light); color: var(--red); }
+
+/* ──── TECH STACK ──── */
+.tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px,1fr)); gap: 10px; }
+.tcat {
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.tcat-header { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; background: var(--bg); }
+.tcat-ico { font-size: 0.95rem; }
+.tcat-name { font-size: 0.72rem; font-weight: 600; }
+.tcat-items { padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.tp {
+  font-size: 0.72rem; font-weight: 500; padding: 3px 9px;
+  border-radius: 7px; border: 1px solid transparent;
+}
+.tp.server { background: var(--blue-light); color: var(--blue); border-color: rgba(0,113,227,0.15); }
+.tp.cdn { background: var(--yellow-light); color: var(--yellow); border-color: rgba(255,149,0,0.15); }
+.tp.backend { background: var(--purple-light); color: var(--purple); border-color: rgba(175,82,222,0.15); }
+.tp.cms { background: var(--green-light); color: var(--green); border-color: rgba(52,199,89,0.15); }
+.tp.frontend { background: var(--blue-light); color: var(--blue); border-color: rgba(0,113,227,0.12); }
+.tp.analytics { background: rgba(0,0,0,0.04); color: var(--text-secondary); }
+.tp.security { background: var(--red-light); color: var(--red); border-color: rgba(255,59,48,0.15); }
+
+/* ──── PORTS ──── */
+.port-summary { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; font-size: 0.78rem; color: var(--text-secondary); }
+.dot-open { width: 8px; height: 8px; border-radius: 50%; background: var(--red); display: inline-block; margin-right: 4px; }
+.dot-closed { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); display: inline-block; margin-right: 4px; }
+.port-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px,1fr)); gap: 8px; }
+.ptile {
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 13px;
+  display: flex; flex-direction: column; gap: 5px;
+  transition: all 0.2s; box-shadow: var(--shadow-sm);
+}
+.ptile.open { border-color: rgba(255,59,48,0.25); background: #fff8f7; }
+.ptile.closed { opacity: 0.5; }
+.ptile:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.ptile-top { display: flex; align-items: center; justify-content: space-between; }
+.ptile-dot { width: 6px; height: 6px; border-radius: 50%; }
+.ptile.open .ptile-dot { background: var(--red); animation: pulse-dot 1.5s ease-in-out infinite; }
+.ptile.closed .ptile-dot { background: var(--text-tertiary); }
+.ptile-risk { font-size: 0.58rem; font-weight: 600; padding: 1px 6px; border-radius: 5px; }
+.ptile.open .ptile-risk { background: var(--red-light); color: var(--red); }
+.ptile.closed .ptile-risk { background: rgba(0,0,0,0.04); color: var(--text-tertiary); }
+.ptile-num { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.ptile.open .ptile-num { color: var(--red); }
+.ptile.closed .ptile-num { color: var(--text-tertiary); }
+.ptile-service { font-size: 0.68rem; font-weight: 600; color: var(--text-secondary); }
+.ptile-desc { font-size: 0.62rem; color: var(--text-tertiary); line-height: 1.3; }
+
+/* ──── API ENDPOINTS ──── */
+.api-wrap { background: var(--surface-solid); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.api-header-row { display: grid; grid-template-columns: 70px 1fr 150px 70px; padding: 9px 16px; background: var(--bg); border-bottom: 1px solid var(--border); font-size: 0.68rem; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.02em; text-transform: uppercase; }
+.api-row { display: grid; grid-template-columns: 70px 1fr 150px 70px; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--border); font-size: 0.78rem; transition: background 0.15s; }
+.api-row:last-child { border-bottom: none; }
+.api-row:hover { background: var(--bg); }
+.acode { padding: 3px 9px; font-size: 0.68rem; font-weight: 600; border-radius: 7px; display: inline-block; text-align: center; }
+.acode.s2 { background: var(--green-light); color: var(--green); }
+.acode.s3 { background: var(--yellow-light); color: var(--yellow); }
+.apath { color: var(--blue); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.78rem; }
+.act { color: var(--text-secondary); font-size: 0.72rem; }
+.api-method { font-size: 0.68rem; font-weight: 600; background: var(--green-light); color: var(--green); padding: 2px 7px; border-radius: 6px; display: inline-block; }
+
+/* ──── LINKS ──── */
+.lwrap { background: var(--surface-solid); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; max-height: 280px; overflow-y: auto; box-shadow: var(--shadow-sm); scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.lrow { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+.lrow:last-child { border-bottom: none; }
+.lrow:hover { background: var(--bg); }
+.ln { color: var(--text-tertiary); font-size: 0.68rem; flex-shrink: 0; min-width: 28px; font-variant-numeric: tabular-nums; }
+.lu { color: var(--blue); text-decoration: none; font-size: 0.78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.lu:hover { text-decoration: underline; }
+.lbadge { font-size: 0.62rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; flex-shrink: 0; }
+.lbadge.ext { background: var(--blue-light); color: var(--blue); }
+.lbadge.int { background: rgba(0,0,0,0.04); color: var(--text-secondary); }
+.lbadge.email { background: var(--green-light); color: var(--green); }
+
+/* ──── FINDINGS ──── */
+.findings-wrap { background: var(--surface-solid); border: 1px solid rgba(255,59,48,0.2); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.findings-hdr { display: grid; grid-template-columns: 110px 1fr 150px; padding: 9px 16px; background: #fff5f5; border-bottom: 1px solid rgba(255,59,48,0.15); font-size: 0.68rem; font-weight: 600; color: var(--red); letter-spacing: 0.02em; text-transform: uppercase; }
+.finding-row { border-bottom: 1px solid rgba(255,59,48,0.08); overflow: hidden; transition: background 0.15s; }
+.finding-row:last-child { border-bottom: none; }
+.finding-row:hover { background: var(--red-light); }
+.finding-main { display: grid; grid-template-columns: 110px 1fr 150px; align-items: center; padding: 12px 16px; cursor: pointer; }
+.finding-param { font-size: 0.82rem; font-weight: 600; color: var(--red); }
+.finding-url { font-size: 0.72rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 8px; }
+.finding-err { font-size: 0.68rem; color: var(--yellow); background: var(--yellow-light); padding: 3px 10px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.finding-detail { display: none; padding: 16px; background: var(--bg); border-top: 1px solid rgba(255,59,48,0.08); }
+.finding-detail.open { display: block; }
+.fd-row { display: flex; gap: 14px; margin-bottom: 10px; align-items: flex-start; }
+.fd-key { font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); min-width: 80px; padding-top: 1px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+.fd-val { font-size: 0.78rem; color: var(--text-primary); word-break: break-all; flex: 1; line-height: 1.5; }
+.fd-val.payload { color: var(--yellow); background: var(--yellow-light); padding: 4px 10px; border-radius: 7px; font-family: 'SF Mono', monospace; }
+.fd-val.fix { color: var(--green); background: var(--green-light); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; line-height: 1.6; }
+.vuln-safe-box { font-size: 0.8rem; color: var(--green); background: var(--green-light); padding: 14px 18px; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 10px; }
+.ebox { font-size: 0.82rem; color: var(--red); background: var(--red-light); padding: 14px 18px; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 10px; }
+.empty-state { font-size: 0.8rem; color: var(--text-secondary); padding: 20px; background: var(--surface-solid); border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: center; }
+
+/* ──── FOOTER ──── */
+footer {
+  position: relative; z-index: 1; margin-top: 60px; padding: 22px 0;
+  border-top: 1px solid var(--border); width: 100%; max-width: 800px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px;
+}
+.ftxt { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; }
+.ftxt strong { color: var(--text-primary); font-weight: 600; }
+.ghlink {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.75rem; font-weight: 500;
+  color: var(--text-secondary); text-decoration: none;
+  background: var(--surface-solid); border: 1px solid var(--border);
+  padding: 7px 16px; border-radius: 10px;
+  transition: all 0.2s; box-shadow: var(--shadow-sm);
+}
+.ghlink:hover { color: var(--text-primary); border-color: var(--border-strong); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.ghlink svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ──── ANIMATIONS ──── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ──── RESPONSIVE ──── */
+@media (max-width: 720px) {
+  nav { padding: 0 16px; }
+  .scancard { padding: 16px; }
+  .score-dashboard { grid-template-columns: 1fr; }
+  .bento { grid-template-columns: repeat(2,1fr); }
+  .ssl-layout { grid-template-columns: 1fr; }
+  .recon-grid { grid-template-columns: 1fr; }
+  .hdr-row { grid-template-columns: 1fr 80px; }
+  .hdr-bar-cell { display: none; }
+  .api-row, .api-header-row { grid-template-columns: 60px 1fr 70px; }
+  .findings-hdr, .finding-main { grid-template-columns: 80px 1fr; }
+  .finding-err, .findings-hdr span:last-child { display: none; }
+  footer { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
 <body>
-<div class="gbg"></div>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
 <nav>
-  <div style="display:flex;align-items:center;gap:14px">
-    <div class="nlogo">
-      <div class="nlogo-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="#00c3ff" stroke-width="1" stroke-dasharray="2 3"/>
-          <circle cx="12" cy="12" r="5" stroke="#00c3ff" stroke-width="1"/>
-          <circle cx="12" cy="12" r="1.5" fill="#00c3ff"/>
-          <line x1="12" y1="1" x2="12" y2="6" stroke="#00c3ff" stroke-width="1.2"/>
-          <line x1="12" y1="18" x2="12" y2="23" stroke="#00c3ff" stroke-width="1.2"/>
-          <line x1="1" y1="12" x2="6" y2="12" stroke="#00c3ff" stroke-width="1.2"/>
-          <line x1="18" y1="12" x2="23" y2="12" stroke="#00c3ff" stroke-width="1.2"/>
-        </svg>
-      </div>
-      NIGHT<em>PROBE</em>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0071e3" opacity="0.15"/>
+        <circle cx="12" cy="9" r="3" fill="#0071e3"/>
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#0071e3" stroke-width="1.5" fill="none"/>
+      </svg>
+      NightProbe
     </div>
-    <span class="nbadge">v2.1</span>
+    <span class="nav-badge">v2.1</span>
   </div>
   <div class="nav-right">
-    <div class="ntime" id="navTime"></div>
-    <div class="nstatus">
-      <div class="pulse-ring"><div class="pulse-dot"></div></div>
-      SCANNER ACTIVE
+    <span class="nav-time" id="navTime"></span>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      Scanner Active
     </div>
   </div>
 </nav>
+
 <main>
   <div class="hero">
-    <div class="hero-eye">Advanced Web Security Intelligence</div>
-    <h1>NIGHT<br><span class="glow-text">PROBE</span></h1>
+    <div class="hero-eyebrow">Advanced Web Security Intelligence</div>
+    <h1>Web Security<br><span>Scanner</span></h1>
     <p class="hero-desc">Pemindai keamanan web komprehensif — analisis DNS, WHOIS, SSL, headers, teknologi, port, XSS, SQLi, dan API endpoint dalam satu klik.</p>
     <div class="hero-pills">
-      <span class="hpill">DNS Lookup</span><span class="hpill">WHOIS</span><span class="hpill">SSL Analysis</span>
-      <span class="hpill">Security Headers</span><span class="hpill">Port Scan</span><span class="hpill">XSS Detection</span>
-      <span class="hpill">SQL Injection</span><span class="hpill">Tech Stack</span><span class="hpill">API Probe</span>
+      <span class="pill">DNS Lookup</span>
+      <span class="pill">WHOIS</span>
+      <span class="pill">SSL Analysis</span>
+      <span class="pill">Security Headers</span>
+      <span class="pill">Port Scan</span>
+      <span class="pill">XSS Detection</span>
+      <span class="pill">SQL Injection</span>
+      <span class="pill">Tech Stack</span>
+      <span class="pill">API Probe</span>
     </div>
   </div>
+
   <div class="scanbox">
-    <div class="twrap">
-      <div class="thead">
-        <div class="tdots"><span class="td r"></span><span class="td y"></span><span class="td g"></span></div>
-        <div class="tpath">nightprobe@scanner:~$ <span style="color:var(--c)">_</span></div>
-        <div style="width:52px"></div>
+    <div class="scancard">
+      <div class="input-wrap">
+        <span class="input-prefix">Target URL</span>
+        <input type="text" id="urlInput" placeholder="https://example.com" autocomplete="off" spellcheck="false">
+        <button id="scanBtn" onclick="runScan()">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          Scan
+        </button>
       </div>
-      <div class="tbody">
-        <div class="inrow">
-          <div class="inpre">TARGET →<span class="cblink"></span></div>
-          <input type="text" id="urlInput" placeholder="https://target.com" autocomplete="off" spellcheck="false">
-          <button id="scanBtn" onclick="runScan()">
-            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            SCAN
-          </button>
-        </div>
-        <div class="chips">
-          <span class="chip">Crawler</span><span class="chip">DNS Recon</span><span class="chip">WHOIS</span>
-          <span class="chip">SSL/TLS</span><span class="chip">Port Scanner</span><span class="chip">HTTP Headers</span>
-          <span class="chip">XSS Probe</span><span class="chip">SQLi Test</span><span class="chip">Tech Detect</span>
-        </div>
+      <div class="scan-modules">
+        <span class="module-chip">Crawler</span>
+        <span class="module-chip">DNS Recon</span>
+        <span class="module-chip">WHOIS</span>
+        <span class="module-chip">SSL/TLS</span>
+        <span class="module-chip">Port Scanner</span>
+        <span class="module-chip">HTTP Headers</span>
+        <span class="module-chip">XSS Probe</span>
+        <span class="module-chip">SQLi Test</span>
+        <span class="module-chip">Tech Detect</span>
+      </div>
 
-        <!-- HACKER LOADING -->
-        <div id="progressSection">
-          <div class="hk-wrap">
-            <canvas id="matrixCanvas"></canvas>
-            <div class="hk-topbar">
-              <div class="hk-dots-row">
-                <span class="hk-d r"></span><span class="hk-d y"></span><span class="hk-d g"></span>
-              </div>
-              <div class="hk-title-txt" id="hkTitle">NIGHTPROBE // INITIALIZING</div>
-              <div class="hk-live"><span class="hk-live-dot"></span>LIVE</div>
-            </div>
-            <div class="hk-body" id="hkBody"></div>
-            <div class="hk-footer">
-              <div class="hk-bar-track"><div class="hk-bar-fill" id="hkFill"></div></div>
-              <div class="hk-pct" id="hkPct">0%</div>
-              <div class="hk-mod" id="hkMod">INIT</div>
-            </div>
+      <!-- PROGRESS -->
+      <div id="progressSection">
+        <div class="progress-card" style="margin-top:16px">
+          <div class="progress-header">
+            <span class="progress-title" id="hkTitle">Scanning…</span>
+            <div class="progress-live"><div class="live-dot"></div>Live</div>
+          </div>
+          <div class="progress-body" id="hkBody"></div>
+          <div class="progress-footer">
+            <div class="progress-track"><div class="progress-fill" id="hkFill"></div></div>
+            <div class="progress-pct" id="hkPct">0%</div>
+            <div class="progress-mod" id="hkMod">INIT</div>
           </div>
         </div>
+      </div>
 
-        <div id="resultsSection">
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></span>
-            SECURITY OVERVIEW<div class="sechd-line"></div>
-          </div>
-          <div class="score-dashboard" id="scoreSection" style="margin-bottom:24px"></div>
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></span>
-            RECONNAISSANCE<div class="sechd-line"></div>
-          </div>
-          <div class="recon-grid" id="reconGrid"></div>
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></span>
-            SSL / TLS CERTIFICATE<div class="sechd-line"></div>
-          </div>
-          <div id="sslSection"></div>
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zM10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg></span>
-            SECURITY HEADERS<div class="sechd-line"></div>
-          </div>
-          <div id="hdrsSection"></div>
-
-          <!-- SQL INJECTION DETAIL -->
-          <div id="sqliSection" style="display:none;margin-bottom:24px">
-            <div class="sechd" style="margin-bottom:12px">
-              <span class="sechd-ico" style="color:var(--r)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-2 5H6v-3h12v3zM20 4H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 5H6V6h12v3z"/></svg></span>
-              SQL INJECTION — DETAIL CELAH<div class="sechd-line"></div>
-              <span class="sechd-count" id="sqliCount" style="background:var(--rg);border-color:rgba(255,45,74,.2);color:var(--r)">0 celah</span>
-            </div>
-            <div id="sqliFindings"></div>
-          </div>
-
-          <!-- XSS DETAIL -->
-          <div id="xssSection" style="display:none;margin-bottom:24px">
-            <div class="sechd" style="margin-bottom:12px">
-              <span class="sechd-ico" style="color:var(--r)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 3l2 2-4 4 4 4-2 2-6-6 6-6zm-8 9l-2-2 4-4-4-4 2-2 6 6-6 6z"/></svg></span>
-              XSS — DETAIL CELAH<div class="sechd-line"></div>
-              <span class="sechd-count" id="xssCount" style="background:var(--rg);border-color:rgba(255,45,74,.2);color:var(--r)">0 celah</span>
-            </div>
-            <div id="xssFindings"></div>
-          </div>
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></span>
-            TECHNOLOGY STACK<div class="sechd-line"></div>
-          </div>
-          <div id="techSection"></div>
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></span>
-            PORT SCAN RESULTS<div class="sechd-line"></div>
-          </div>
-          <div class="port-section" id="portSection"></div>
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg></span>
-            API ENDPOINTS<div class="sechd-line"></div>
-          </div>
-          <div id="apiSection"></div>
-          <div class="sechd">
-            <span class="sechd-ico"><svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></span>
-            DISCOVERED LINKS<div class="sechd-line"></div>
-            <span class="sechd-count" id="linksCount">0 URL</span>
-          </div>
-          <div class="lwrap" id="linksWrap"></div>
+      <div id="resultsSection" style="width:100%;max-width:100%">
+        <!-- SECURITY OVERVIEW -->
+        <div class="section-header" style="margin-top:24px">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
+          <span class="section-title">Security Overview</span>
+          <div class="section-line"></div>
         </div>
+        <div class="score-dashboard" id="scoreSection"></div>
+
+        <!-- RECON -->
+        <div class="section-header">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+          <span class="section-title">Reconnaissance</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="recon-grid" id="reconGrid"></div>
+
+        <!-- SSL -->
+        <div class="section-header">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+          <span class="section-title">SSL / TLS Certificate</span>
+          <div class="section-line"></div>
+        </div>
+        <div id="sslSection"></div>
+
+        <!-- HEADERS -->
+        <div class="section-header">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zM10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg></div>
+          <span class="section-title">Security Headers</span>
+          <div class="section-line"></div>
+        </div>
+        <div id="hdrsSection"></div>
+
+        <!-- SQLI FINDINGS -->
+        <div id="sqliSection" style="display:none">
+          <div class="section-header" style="margin-top:20px">
+            <div class="section-icon" style="background:var(--red-light);color:var(--red)"><svg viewBox="0 0 24 24"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-2 5H6v-3h12v3zM20 4H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 5H6V6h12v3z"/></svg></div>
+            <span class="section-title" style="color:var(--red)">SQL Injection — Detail Celah</span>
+            <div class="section-line"></div>
+            <span class="section-count" style="background:var(--red-light);color:var(--red)" id="sqliCount">0 celah</span>
+          </div>
+          <div id="sqliFindings"></div>
+        </div>
+
+        <!-- XSS FINDINGS -->
+        <div id="xssSection" style="display:none">
+          <div class="section-header" style="margin-top:20px">
+            <div class="section-icon" style="background:var(--red-light);color:var(--red)"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 3l2 2-4 4 4 4-2 2-6-6 6-6zm-8 9l-2-2 4-4-4-4 2-2 6 6-6 6z"/></svg></div>
+            <span class="section-title" style="color:var(--red)">XSS — Detail Celah</span>
+            <div class="section-line"></div>
+            <span class="section-count" style="background:var(--red-light);color:var(--red)" id="xssCount">0 celah</span>
+          </div>
+          <div id="xssFindings"></div>
+        </div>
+
+        <!-- TECH -->
+        <div class="section-header">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3z"/></svg></div>
+          <span class="section-title">Technology Stack</span>
+          <div class="section-line"></div>
+        </div>
+        <div id="techSection"></div>
+
+        <!-- PORTS -->
+        <div class="section-header">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></div>
+          <span class="section-title">Port Scan Results</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="port-section" id="portSection"></div>
+
+        <!-- API -->
+        <div class="section-header">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg></div>
+          <span class="section-title">API Endpoints</span>
+          <div class="section-line"></div>
+        </div>
+        <div id="apiSection"></div>
+
+        <!-- LINKS -->
+        <div class="section-header">
+          <div class="section-icon"><svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></div>
+          <span class="section-title">Discovered Links</span>
+          <div class="section-line"></div>
+          <span class="section-count" id="linksCount">0 URL</span>
+        </div>
+        <div class="lwrap" id="linksWrap"></div>
       </div>
     </div>
   </div>
+
   <footer>
     <div class="ftxt"><strong>NightProbe</strong> Security Scanner v2.1<br>Gunakan hanya pada sistem yang Anda miliki atau telah mendapat izin eksplisit untuk diuji.</div>
     <a href="https://github.com/Fakhri269" class="ghlink">
@@ -459,111 +742,68 @@ footer{position:relative;z-index:1;margin-top:60px;padding:22px 0;border-top:1px
     </a>
   </footer>
 </main>
+
 <script>
 // Clock
 function updateClock(){const n=new Date();document.getElementById('navTime').textContent=n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' WIB';}
 setInterval(updateClock,1000);updateClock();
 
-// Matrix rain
-let matRAF=null;
-function startMatrix(){
-  const cv=document.getElementById('matrixCanvas');
-  const wr=cv.parentElement;
-  cv.width=wr.offsetWidth;cv.height=wr.offsetHeight;
-  const ctx=cv.getContext('2d');
-  const cols=Math.floor(cv.width/13);
-  const drops=Array(cols).fill(1);
-  const chars='アイウエオカキクケコ01アBCDEF!@#xSSQLiDNS'.split('');
-  function draw(){
-    ctx.fillStyle='rgba(0,0,0,.06)';ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.font='11px IBM Plex Mono';
-    drops.forEach((y,i)=>{
-      const c=chars[Math.floor(Math.random()*chars.length)];
-      const alpha=Math.random()>.7?.9:.4;
-      ctx.fillStyle=`rgba(0,195,255,${alpha})`;
-      ctx.fillText(c,i*13,y*13);
-      if(y*13>cv.height&&Math.random()>.95)drops[i]=0;
-      drops[i]++;
-    });
-    matRAF=requestAnimationFrame(draw);
-  }
-  draw();
-}
-function stopMatrix(){
-  if(matRAF){cancelAnimationFrame(matRAF);matRAF=null;}
-  const cv=document.getElementById('matrixCanvas');
-  cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
-}
-
-// Hacker terminal script
-function buildLines(host){
-  return[
-    {type:'cmd',ps:'root@np',cmd:'nmap',args:`-sV -T4 --open ${host}`},
-    {type:'out',text:`Starting Nmap 7.94 — target: ${host}`,badge:'info'},
-    {type:'cmd',ps:'root@np',cmd:'dig',args:`+short ${host} A AAAA MX`},
-    {type:'out',text:'DNS A record resolved successfully',badge:'ok'},
-    {type:'cmd',ps:'root@np',cmd:'whois',args:host},
-    {type:'out',text:'WHOIS: registrar and expiry data retrieved',badge:'ok'},
-    {type:'cmd',ps:'root@np',cmd:'openssl',args:`s_client -connect ${host}:443 -brief`},
-    {type:'out',text:'TLS 1.3 handshake OK — certificate verified',badge:'ok'},
-    {type:'cmd',ps:'root@np',cmd:'curl',args:`-sI --max-time 8 https://${host}`},
-    {type:'out',text:'HTTP/2 200 — security headers captured',badge:'ok'},
-    {type:'cmd',ps:'root@np',cmd:'python3',args:`xss_probe.py --target ${host} --level 2`},
-    {type:'out',text:'Injecting 48 XSS payloads into forms and params',badge:'warn'},
-    {type:'cmd',ps:'root@np',cmd:'sqlmap',args:`-u https://${host} --batch --level=1 -q`},
-    {type:'out',text:'Testing boolean-based and time-based SQLi vectors',badge:'warn'},
-    {type:'cmd',ps:'root@np',cmd:'nuclei',args:`-u ${host} -t http/technologies/ -silent`},
-    {type:'out',text:'Tech fingerprinting complete',badge:'ok'},
-    {type:'cmd',ps:'root@np',cmd:'python3',args:`api_probe.py --host ${host} --wordlist common`},
-    {type:'out',text:'API endpoint discovery done',badge:'ok'},
-    {type:'cmd',ps:'root@np',cmd:'python3',args:`nightprobe/report.py --compile --out /tmp/result.json`},
-    {type:'out',text:'All modules complete — compiling final report',badge:'ok'},
-  ];
+// Progress log lines
+function addLogLine(icon, text, badge){
+  const body=document.getElementById('hkBody');
+  const el=document.createElement('div');
+  el.className='log-line';
+  el.innerHTML=`<span class="log-icon">${icon}</span><span class="log-text">${text}</span>${badge?`<span class="log-badge ${badge}">${badge}</span>`:''}`;
+  body.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  const lines=body.querySelectorAll('.log-line');
+  if(lines.length>6)lines[0].remove();
 }
 
 const MODS=['DNS','WHOIS','SSL/TLS','HEADERS','XSS','SQLI','TECH','API','REPORT','DONE'];
-
-function addHkLine(html){
-  const body=document.getElementById('hkBody');
-  const el=document.createElement('div');
-  el.className='hk-line';el.innerHTML=html;
-  body.appendChild(el);
-  requestAnimationFrame(()=>el.classList.add('show'));
-  const lines=body.querySelectorAll('.hk-line');
-  if(lines.length>8)lines[0].remove();
-}
-
-function setHkProg(pct,modIdx){
+function setProgress(pct,modIdx){
   document.getElementById('hkFill').style.width=pct+'%';
   document.getElementById('hkPct').textContent=pct+'%';
   document.getElementById('hkMod').textContent=MODS[Math.min(modIdx,MODS.length-1)];
 }
-
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
-async function animateHacker(host){
+function buildLines(host){
+  return[
+    {icon:'🔍',text:`Resolving DNS for ${host}…`,badge:'info'},
+    {icon:'✅',text:'DNS A record resolved successfully',badge:'ok'},
+    {icon:'📋',text:`WHOIS lookup: ${host}`,badge:'info'},
+    {icon:'✅',text:'Registrar and expiry data retrieved',badge:'ok'},
+    {icon:'🔒',text:`SSL handshake: ${host}:443`,badge:'info'},
+    {icon:'✅',text:'TLS 1.3 — certificate verified',badge:'ok'},
+    {icon:'📡',text:'Fetching HTTP security headers…',badge:'info'},
+    {icon:'✅',text:'HTTP/2 200 — headers captured',badge:'ok'},
+    {icon:'⚡',text:'Scanning common ports…',badge:'info'},
+    {icon:'🕷',text:'Crawling and mapping links…',badge:'info'},
+    {icon:'🔬',text:'Probing XSS vectors on forms…',badge:'warn'},
+    {icon:'💉',text:'Testing SQL injection patterns…',badge:'warn'},
+    {icon:'🧬',text:'Fingerprinting technology stack…',badge:'info'},
+    {icon:'🔗',text:'Probing API endpoints…',badge:'info'},
+    {icon:'📊',text:'Compiling report…',badge:'info'},
+    {icon:'✅',text:'Scan complete. Report ready.',badge:'ok'},
+  ];
+}
+
+async function animateProgress(host){
   const lines=buildLines(host);
-  const total=lines.length;
-  for(let i=0;i<total;i++){
+  for(let i=0;i<lines.length;i++){
+    await sleep(200+Math.random()*200);
+    setProgress(Math.round((i+1)/lines.length*92),Math.floor(i/2));
     const l=lines[i];
-    const delay=l.type==='cmd'?260+Math.random()*180:120+Math.random()*100;
-    await sleep(delay);
-    const pct=Math.round((i+1)/total*92);
-    setHkProg(pct,Math.floor(i/2));
-    if(l.type==='cmd'){
-      addHkLine(`<span class="hk-ps">${l.ps}:~#&nbsp;</span><span class="hk-cmd">${l.cmd}</span>&nbsp;<span class="hk-arg">${l.args}</span><span class="hk-cursor"></span>`);
-    } else {
-      const bc=l.badge==='ok'?'ok':l.badge==='warn'?'warn':l.badge==='err'?'err':'info';
-      addHkLine(`<span class="hk-ps">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─&nbsp;</span><span class="hk-out">${l.text}</span><span class="hk-badge ${bc}">${l.badge.toUpperCase()}</span>`);
-    }
+    addLogLine(l.icon,l.text,l.badge);
   }
 }
 
 async function runScan(){
   const url=document.getElementById('urlInput').value.trim();
   if(!url){
-    const iw=document.querySelector('.inrow');
-    iw.style.borderColor='rgba(255,45,74,.4)';iw.style.boxShadow='0 0 0 3px rgba(255,45,74,.05)';
+    const iw=document.querySelector('.input-wrap');
+    iw.style.borderColor='var(--red)';iw.style.boxShadow='0 0 0 4px rgba(255,59,48,0.1)';
     setTimeout(()=>{iw.style.borderColor='';iw.style.boxShadow='';},1200);return;
   }
   let host;try{host=new URL(url).hostname;}catch{host=url;}
@@ -572,19 +812,19 @@ async function runScan(){
   document.getElementById('progressSection').style.display='block';
   document.getElementById('resultsSection').style.display='none';
   document.getElementById('hkBody').innerHTML='';
-  setHkProg(0,0);
-  document.getElementById('hkTitle').textContent=`NIGHTPROBE // SCANNING ${host.toUpperCase()}`;
-  startMatrix();
+  setProgress(0,0);
+  document.getElementById('hkTitle').textContent=`Scanning ${host}`;
 
   const[,data]=await Promise.all([
-    animateHacker(host),
-    fetch(`https://zetianus-nightprobe-backend.hf.space/scan/?url=${encodeURIComponent(url)}`).then(r=>r.json()).catch(e=>({error:e.message}))
+    animateProgress(host),
+    fetch(`https://zetianus-nightprobe-backend.hf.space/scan/?url=${encodeURIComponent(url)}`).then(r=>{
+      if(!r.ok || !r.headers.get('content-type')?.includes('json')) throw new Error(`Server error ${r.status}`);
+      return r.json();
+    }).catch(e=>({error:e.message}))
   ]);
 
-  setHkProg(100,9);
-  addHkLine(`<span class="hk-ps">root@np:~#&nbsp;</span><span class="hk-cmd">echo</span>&nbsp;<span style="color:#00e57a">"[DONE] Scan complete. Report ready."</span><span class="hk-badge ok">DONE</span>`);
-  await sleep(500);
-  stopMatrix();
+  setProgress(100,9);
+  await sleep(400);
   document.getElementById('progressSection').style.display='none';
   renderResults(data);
   document.getElementById('resultsSection').style.display='block';
@@ -592,115 +832,34 @@ async function runScan(){
   btn.disabled=false;
 }
 
-// Metadata
-const PDATA={
-  21:{name:'FTP',desc:'File Transfer Protocol — risiko credentials plaintext',risk:'HIGH'},
-  22:{name:'SSH',desc:'Secure Shell — akses remote terenkripsi',risk:'MED'},
-  23:{name:'Telnet',desc:'Remote access tidak terenkripsi — BAHAYA',risk:'CRIT'},
-  25:{name:'SMTP',desc:'Email server — potensi open relay',risk:'MED'},
-  53:{name:'DNS',desc:'Domain Name System resolver',risk:'LOW'},
-  80:{name:'HTTP',desc:'Web server tanpa enkripsi',risk:'MED'},
-  110:{name:'POP3',desc:'Email retrieval protocol',risk:'MED'},
-  143:{name:'IMAP',desc:'Internet Message Access Protocol',risk:'MED'},
-  443:{name:'HTTPS',desc:'Secure web — terenkripsi TLS',risk:'LOW'},
-  3306:{name:'MySQL',desc:'Database MySQL exposed — BERBAHAYA',risk:'CRIT'},
-  5432:{name:'PostgreSQL',desc:'Database PostgreSQL exposed',risk:'CRIT'},
-  6379:{name:'Redis',desc:'Redis cache — sering tanpa auth',risk:'CRIT'},
-  8080:{name:'HTTP-Alt',desc:'Port web alternatif / dev server',risk:'MED'},
-  8443:{name:'HTTPS-Alt',desc:'HTTPS pada port alternatif',risk:'LOW'},
-  27017:{name:'MongoDB',desc:'MongoDB tanpa auth — CRIT',risk:'CRIT'},
-  5000:{name:'Dev Server',desc:'Development server (Flask/Node)',risk:'HIGH'},
-  9200:{name:'Elasticsearch',desc:'Elastic tanpa auth — data exposed',risk:'CRIT'},
-};
-const HDATA={
-  'Content-Security-Policy':{explain:'Mencegah XSS & code injection.',why:'Tanpa CSP, browser bisa menjalankan script berbahaya.'},
-  'Strict-Transport-Security':{explain:'Memaksa browser hanya menggunakan HTTPS.',why:'Tanpa HSTS, rentan SSL-stripping attacks.'},
-  'X-Frame-Options':{explain:'Mencegah halaman di-embed dalam iframe domain lain.',why:'Melindungi dari clickjacking attacks.'},
-  'X-Content-Type-Options':{explain:'Mencegah browser MIME sniffing.',why:'Browser bisa mengeksekusi konten berbahaya jika tipe file salah.'},
-  'X-XSS-Protection':{explain:'Filter XSS bawaan browser (legacy).',why:'Perlindungan tambahan untuk browser lama.'},
-  'Referrer-Policy':{explain:'Mengontrol informasi referrer saat navigasi.',why:'Mencegah bocornya URL sensitif ke link eksternal.'},
-};
-const CAT_META={
-  server:{icon:'🖥',label:'Web Server',color:'var(--c)'},
-  cdn:{icon:'☁',label:'CDN / Proxy',color:'var(--y)'},
-  backend:{icon:'⚙',label:'Backend Framework',color:'var(--p)'},
-  cms:{icon:'📝',label:'CMS Platform',color:'var(--g)'},
-  frontend:{icon:'🎨',label:'Frontend',color:'#80d4f5'},
-  analytics:{icon:'📊',label:'Analytics',color:'var(--tm)'},
-  security:{icon:'🛡',label:'Security / WAF',color:'var(--r)'},
-};
+// Data
+const PDATA={21:{name:'FTP',desc:'File Transfer — plaintext credentials',risk:'HIGH'},22:{name:'SSH',desc:'Secure Shell — encrypted remote access',risk:'MED'},23:{name:'Telnet',desc:'Unencrypted remote access — DANGER',risk:'CRIT'},25:{name:'SMTP',desc:'Email server — potential open relay',risk:'MED'},53:{name:'DNS',desc:'Domain Name System resolver',risk:'LOW'},80:{name:'HTTP',desc:'Web server without encryption',risk:'MED'},110:{name:'POP3',desc:'Email retrieval protocol',risk:'MED'},143:{name:'IMAP',desc:'Internet Message Access Protocol',risk:'MED'},443:{name:'HTTPS',desc:'Secure web — TLS encrypted',risk:'LOW'},3306:{name:'MySQL',desc:'MySQL exposed — DANGEROUS',risk:'CRIT'},5432:{name:'PostgreSQL',desc:'PostgreSQL exposed',risk:'CRIT'},6379:{name:'Redis',desc:'Redis cache — often no auth',risk:'CRIT'},8080:{name:'HTTP-Alt',desc:'Alternate web port / dev server',risk:'MED'},8443:{name:'HTTPS-Alt',desc:'HTTPS on alternate port',risk:'LOW'},27017:{name:'MongoDB',desc:'MongoDB no auth — CRITICAL',risk:'CRIT'},5000:{name:'Dev Server',desc:'Development server (Flask/Node)',risk:'HIGH'},9200:{name:'Elasticsearch',desc:'Elastic no auth — data exposed',risk:'CRIT'}};
+const HDATA={'Content-Security-Policy':{explain:'Prevents XSS & code injection.',why:'Without CSP, browser can run malicious scripts.'},'Strict-Transport-Security':{explain:'Forces browser to use HTTPS only.',why:'Without HSTS, vulnerable to SSL-stripping attacks.'},'X-Frame-Options':{explain:'Prevents page from being embedded in iframes.',why:'Protects against clickjacking attacks.'},'X-Content-Type-Options':{explain:'Prevents browser MIME sniffing.',why:'Browser may execute malicious content with wrong MIME type.'},'X-XSS-Protection':{explain:'Browser built-in XSS filter (legacy).',why:'Extra protection for older browsers.'},'Referrer-Policy':{explain:'Controls referrer info when navigating.',why:'Prevents sensitive URL leakage to external links.'}};
+const CAT_META={server:{icon:'🖥',label:'Web Server'},cdn:{icon:'☁',label:'CDN / Proxy'},backend:{icon:'⚙',label:'Backend Framework'},cms:{icon:'📝',label:'CMS Platform'},frontend:{icon:'🎨',label:'Frontend'},analytics:{icon:'📊',label:'Analytics'},security:{icon:'🛡',label:'Security / WAF'}};
 
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmt(d){if(!d||['None','null','undefined'].includes(String(d)))return'–';try{const dt=new Date(d);return isNaN(dt)?String(d).split('T')[0]||'–':dt.toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'});}catch{return String(d).split('T')[0]||'–';}}
 function isExpSoon(d){if(!d)return false;try{return((new Date(d)-new Date())/86400000)<60;}catch{return false;}}
 function exDomain(url){try{return new URL(url).hostname;}catch{return url;}}
 
-function bc(cls,path,val,lbl,badge,desc){
-  return`<div class="bcard ${cls}"><div class="bc-row"><div class="bc-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="${path}"/></svg></div><span class="bc-badge">${badge}</span></div><div class="bc-val">${val}</div><div class="bc-lbl">${lbl}</div>${desc?`<div class="bc-desc">${desc}</div>`:''}</div>`;
+function bcard(cls,iconPath,val,lbl,badge,desc){
+  return`<div class="bcard ${cls}"><div class="bcard-top"><div class="bcard-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="${iconPath}"/></svg></div><span class="bcard-badge">${badge}</span></div><div class="bcard-val">${val}</div><div class="bcard-lbl">${lbl}</div>${desc?`<div class="bcard-desc">${desc}</div>`:''}</div>`;
 }
 
-function renderFindings(containerId, findings, type){
-  const sectionId = type==='sqli'?'sqliSection':'xssSection';
-  const countId   = type==='sqli'?'sqliCount':'xssCount';
-  const section   = document.getElementById(sectionId);
-  const container = document.getElementById(containerId);
-  if(!section||!container) return;
-
-  if(!findings||findings.length===0){
-    section.style.display='none';
-    return;
-  }
-
+function renderFindings(containerId,findings,type){
+  const sectionId=type==='sqli'?'sqliSection':'xssSection';
+  const countId=type==='sqli'?'sqliCount':'xssCount';
+  const section=document.getElementById(sectionId);
+  const container=document.getElementById(containerId);
+  if(!section||!container)return;
+  if(!findings||findings.length===0){section.style.display='none';return;}
   section.style.display='block';
-  document.getElementById(countId).textContent = findings.length+' celah';
-
-  const label = type==='sqli'?'Error DB':'Konteks';
-
-  container.innerHTML=`
-    <div class="findings-wrap">
-      <div class="findings-hdr">
-        <span>Parameter</span>
-        <span>URL yang Rentan</span>
-        <span>${label}</span>
-      </div>
-      ${findings.map((f,i)=>`
-        <div class="finding-row" id="fr-${type}-${i}">
-          <div class="finding-main" onclick="toggleFinding('${type}',${i})">
-            <span class="finding-param">?${esc(f.param)}</span>
-            <span class="finding-url" title="${esc(f.url)}">${esc(f.url)}</span>
-            <span class="finding-err">${esc(f.error||f.payload||'—')}</span>
-          </div>
-          <div class="finding-detail" id="fd-${type}-${i}">
-            <div class="fd-row">
-              <span class="fd-key">Parameter</span>
-              <span class="fd-val"><span style="color:var(--r);font-weight:600">?${esc(f.param)}</span> — titik injeksi terdeteksi</span>
-            </div>
-            <div class="fd-row">
-              <span class="fd-key">URL</span>
-              <span class="fd-val url-val">${esc(f.url)}</span>
-            </div>
-            <div class="fd-row">
-              <span class="fd-key">Payload</span>
-              <span class="fd-val payload">${esc(f.payload)}</span>
-            </div>
-            ${f.error?`<div class="fd-row"><span class="fd-key">Error / Bukti</span><span class="fd-val" style="color:var(--y)">${esc(f.error)}</span></div>`:''}
-            <div class="fd-row">
-              <span class="fd-key">Fix</span>
-              <span class="fd-val fix">✅ ${esc(f.fix)}</span>
-            </div>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-    <div style="margin-top:8px;font-family:var(--mono);font-size:.55rem;color:var(--tm);padding:8px 12px;background:var(--s2);border:1px solid var(--b)">
-      ▶ Klik baris untuk melihat detail payload, URL lengkap, dan cara perbaikan.
-    </div>`;
+  document.getElementById(countId).textContent=findings.length+' celah';
+  const label=type==='sqli'?'DB Error':'Context';
+  container.innerHTML=`<div class="findings-wrap"><div class="findings-hdr"><span>Parameter</span><span>Vulnerable URL</span><span>${label}</span></div>${findings.map((f,i)=>`<div class="finding-row" id="fr-${type}-${i}"><div class="finding-main" onclick="toggleFinding('${type}',${i})"><span class="finding-param">?${esc(f.param)}</span><span class="finding-url" title="${esc(f.url)}">${esc(f.url)}</span><span class="finding-err">${esc(f.error||f.payload||'—')}</span></div><div class="finding-detail" id="fd-${type}-${i}"><div class="fd-row"><span class="fd-key">Parameter</span><span class="fd-val"><span style="color:var(--red);font-weight:600">?${esc(f.param)}</span> — injection point detected</span></div><div class="fd-row"><span class="fd-key">URL</span><span class="fd-val" style="color:var(--blue);font-size:0.72rem">${esc(f.url)}</span></div><div class="fd-row"><span class="fd-key">Payload</span><span class="fd-val payload">${esc(f.payload)}</span></div>${f.error?`<div class="fd-row"><span class="fd-key">Evidence</span><span class="fd-val" style="color:var(--yellow)">${esc(f.error)}</span></div>`:''}<div class="fd-row"><span class="fd-key">Fix</span><span class="fd-val fix">✅ ${esc(f.fix)}</span></div></div></div>`).join('')}</div>`;
 }
 
-function toggleFinding(type, idx){
-  const el = document.getElementById(`fd-${type}-${idx}`);
-  if(el) el.classList.toggle('open');
-}
+function toggleFinding(type,idx){const el=document.getElementById(`fd-${type}-${idx}`);if(el)el.classList.toggle('open');}
 
 function renderResults(data){
   if(data.error){
@@ -709,13 +868,10 @@ function renderResults(data){
     return;
   }
   const L=data.links||[],H=data.headers||{};
-  // Support format baru (object dengan .vulnerable & .findings) dan format lama (boolean)
   const xssObj=data.xss||{vulnerable:false,findings:[]};
   const sqliObj=data.sqli||{vulnerable:false,findings:[]};
-  const xss=xssObj.vulnerable||false;
-  const sqli=sqliObj.vulnerable||false;
-  const xssFindings=xssObj.findings||[];
-  const sqliFindings=sqliObj.findings||[];
+  const xss=xssObj.vulnerable||false,sqli=sqliObj.vulnerable||false;
+  const xssFindings=xssObj.findings||[],sqliFindings=sqliObj.findings||[];
   const dns=data.dns||{},whois=data.whois||{},ports=data.ports||{},ssl=data.ssl||{},tech=data.tech||{},api=data.api||[];
   const miss=Object.values(H).filter(v=>v==='missing').length;
   const openP=Object.entries(ports).filter(([,s])=>s==='open').length;
@@ -726,130 +882,115 @@ function renderResults(data){
   if(miss>4)sc-=20;else if(miss>2)sc-=10;
   if(openP>5)sc-=15;else if(openP>2)sc-=7;
   if(!ssl.valid)sc-=15;sc=Math.max(0,sc);
-  const SC=sc>=80?'#00e57a':sc>=55?'#ffcc00':'#ff2d4a';
+  const SC=sc>=80?'#34c759':sc>=55?'#ff9500':'#ff3b30';
   const SG=sc>=80?'A':sc>=65?'B':sc>=50?'C':sc>=35?'D':'F';
-  const GC=sc>=80?'var(--g)':sc>=65?'var(--c)':sc>=50?'var(--y)':'var(--r)';
-  const STAG=sc>=80?'AMAN':sc>=65?'CUKUP':sc>=50?'BERISIKO':sc>=35?'RENTAN':'KRITIS';
+  const GC=sc>=80?'var(--green)':sc>=65?'var(--blue)':sc>=50?'var(--yellow)':'var(--red)';
+  const STAG=sc>=80?'Aman':sc>=65?'Cukup Baik':sc>=50?'Berisiko':sc>=35?'Rentan':'Kritis';
+  const SBGC=sc>=80?'var(--green-light)':sc>=50?'var(--yellow-light)':'var(--red-light)';
   const SDESC=sc>=80?'Tidak ada kerentanan kritis terdeteksi.':sc>=65?'Beberapa celah minor perlu diperbaiki.':sc>=50?'Terdapat kerentanan yang perlu segera ditangani.':sc>=35?'Banyak kerentanan serius ditemukan.':'Sistem dalam kondisi sangat tidak aman!';
-  const R=80,CIRC=2*Math.PI*R,OFF=CIRC-(sc/100)*CIRC;
-  const ticks=Array.from({length:24},(_,i)=>{const a=(i/24)*360-90,rad=a*Math.PI/180,r1=92,r2=96;const x1=100+r1*Math.cos(rad),y1=100+r1*Math.sin(rad),x2=100+r2*Math.cos(rad),y2=100+r2*Math.sin(rad);return`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--s4)" stroke-width="1.5"/>`;}).join('');
+  const R=70,CIRC=2*Math.PI*R,OFF=CIRC-(sc/100)*CIRC;
 
   document.getElementById('scoreSection').innerHTML=`
   <div class="score-main">
     <div class="score-svg"><svg viewBox="0 0 200 200">
-      <defs><filter id="rg"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-      ${ticks}
-      <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--s4)" stroke-width="12"/>
-      <circle cx="100" cy="100" r="${R}" fill="none" stroke="${SC}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1);filter:url(#rg)" id="mainArc"/>
-      <text x="100" y="90" text-anchor="middle" fill="${SC}" font-family="Orbitron" font-size="34" font-weight="900" letter-spacing="2">${sc}</text>
-      <text x="100" y="108" text-anchor="middle" fill="var(--tm)" font-family="IBM Plex Mono" font-size="8" letter-spacing="3">SECURITY SCORE</text>
-      <text x="100" y="126" text-anchor="middle" fill="var(--s4)" font-family="IBM Plex Mono" font-size="7" letter-spacing="2">/ 100</text>
+      <circle cx="100" cy="100" r="${R}" fill="none" stroke="#e5e5ea" stroke-width="10"/>
+      <circle cx="100" cy="100" r="${R}" fill="none" stroke="${SC}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)" id="mainArc"/>
+      <text x="100" y="94" text-anchor="middle" fill="${SC}" font-family="Inter,-apple-system,sans-serif" font-size="38" font-weight="700" letter-spacing="-2">${sc}</text>
+      <text x="100" y="114" text-anchor="middle" fill="#aeaeb2" font-family="Inter,-apple-system,sans-serif" font-size="9" font-weight="500" letter-spacing="1">SECURITY SCORE</text>
     </svg></div>
     <div class="score-grade" style="color:${GC}">${SG}</div>
     <div class="score-label">Security Grade</div>
-    <div class="score-pill" style="color:${GC};border-color:${GC};background:${sc>=80?'var(--gg)':sc>=50?'var(--yg)':'var(--rg)'}">${STAG}</div>
+    <div class="score-tag" style="color:${GC};background:${SBGC}">${STAG}</div>
     <div class="score-desc">${SDESC}</div>
   </div>
   <div class="bento">
-    ${bc(xss?'danger':'safe','M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 3l2 2-4 4 4 4-2 2-6-6 6-6zm-8 9l-2-2 4-4-4-4 2-2 6 6-6 6z',xss?'!':'✓','XSS INJECTION',xss?'TERDETEKSI':'AMAN',xss?'Ditemukan '+xssFindings.length+' titik XSS!':'Tidak ada kerentanan XSS terdeteksi.')}
-    ${bc(sqli?'danger':'safe','M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-2 5H6v-3h12v3zM20 4H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 5H6V6h12v3z',sqli?'!':'✓','SQL INJECTION',sqli?'TERDETEKSI':'AMAN',sqli?'Ditemukan '+sqliFindings.length+' celah SQLi!':'Tidak ada SQL injection yang berhasil.')}
-    ${bc(miss>2?'warn':'safe','M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z',miss,'HTTP HEADERS',miss>2?'PERLU PERBAIKAN':'CUKUP BAIK',miss===0?'Semua header keamanan terpasang.':miss+' dari 6 security header belum dikonfigurasi.')}
-    ${bc(ssl.valid?'safe':'danger','M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z',ssl.valid?'✓':'✗','SSL CERTIFICATE',ssl.valid?'VALID':'TIDAK VALID',ssl.valid?'Sertifikat SSL aktif & terenkripsi.':'SSL tidak valid — koneksi tidak terenkripsi!')}
-    ${bc(openP>3?'warn':'info','M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z',openP,'OPEN PORTS',openP>5?'PERHATIKAN':'INFO',openP===0?'Tidak ada port terbuka.':'Ditemukan '+openP+' port terbuka.')}
-    ${bc('info','M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z',api.length,'API ENDPOINTS','DITEMUKAN',api.length===0?'Tidak ada API endpoint publik.':'Ditemukan '+api.length+' endpoint API.')}
-    ${bc('purple','M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3z',tCount,'TECH DETECTED','INFO',tCount===0?'Teknologi tidak terdeteksi.':tCount+' teknologi teridentifikasi.')}
-    ${bc('info','M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z',L.length,'LINKS FOUND','INFO','Total '+L.length+' URL ditemukan saat crawling.')}
+    ${bcard(xss?'danger':'safe','M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 3l2 2-4 4 4 4-2 2-6-6 6-6zm-8 9l-2-2 4-4-4-4 2-2 6 6-6 6z',xss?'!':'✓','XSS Injection',xss?'Detected':'Safe',xss?'XSS found in '+xssFindings.length+' locations.':'No XSS vulnerabilities detected.')}
+    ${bcard(sqli?'danger':'safe','M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-2 5H6v-3h12v3zM20 4H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 5H6V6h12v3z',sqli?'!':'✓','SQL Injection',sqli?'Detected':'Safe',sqli?'SQLi found in '+sqliFindings.length+' parameters.':'Database is protected.')}
+    ${bcard(miss>2?'warn':'safe','M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z',miss,'HTTP Headers',miss>2?'Needs Work':'Good',miss===0?'All security headers configured.':miss+' of 6 headers missing.')}
+    ${bcard(ssl.valid?'safe':'danger','M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z',ssl.valid?'✓':'✗','SSL Certificate',ssl.valid?'Valid':'Invalid',ssl.valid?'Certificate active & encrypted.':'No valid SSL — connection unencrypted!')}
+    ${bcard(openP>3?'warn':'info','M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z',openP,'Open Ports',openP>5?'Review':'Info',openP===0?'No open ports found.':openP+' open ports detected.')}
+    ${bcard('info','M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z',api.length,'API Endpoints','Found',api.length===0?'No public API endpoints.':api.length+' API endpoints found.')}
+    ${bcard('purple','M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3z',tCount,'Tech Detected','Info',tCount===0?'No technologies detected.':tCount+' technologies identified.')}
+    ${bcard('info','M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z',L.length,'Links Found','Info','Total '+L.length+' URLs found crawling.')}
   </div>`;
   setTimeout(()=>{const a=document.getElementById('mainArc');if(a)a.style.strokeDashoffset=OFF;},100);
 
   // RECON
-  const dnsRows=dns.error?`<div class="irow"><span class="ik">error</span><span class="iv bad">${esc(dns.error)}</span></div>`
+  const dnsRows=dns.error?`<div class="irow"><span class="ik">Error</span><span class="iv bad">${esc(dns.error)}</span></div>`
     :`<div class="irow"><span class="ik">Hostname</span><span class="iv">${esc(dns.hostname||'–')}</span></div>
-     <div class="irow"><span class="ik">IP Utama</span><span class="iv ok">${esc(dns.ip||'–')}</span></div>
-     ${(dns.all_ips||[]).length>1?`<div class="irow"><span class="ik">Semua IP</span><span class="iv dim">${esc(dns.all_ips.join(', '))}</span></div>`:''}
-     <div class="irow-note">💡 IP address menunjukkan server atau load balancer yang mengelola domain ini.</div>`;
-
+     <div class="irow"><span class="ik">Primary IP</span><span class="iv ok">${esc(dns.ip||'–')}</span></div>
+     ${(dns.all_ips||[]).length>1?`<div class="irow"><span class="ik">All IPs</span><span class="iv dim">${esc(dns.all_ips.join(', '))}</span></div>`:''}
+     <div class="irow-note">💡 IP address indicates the server or load balancer managing this domain.</div>`;
   const ns=Array.isArray(whois.name_servers)?whois.name_servers.slice(0,4).join('<br>'):(whois.name_servers||'–');
-  const whoisRows=whois.error?`<div class="irow"><span class="ik">error</span><span class="iv bad">${esc(whois.error)}</span></div>`
+  const whoisRows=whois.error?`<div class="irow"><span class="ik">Error</span><span class="iv bad">${esc(whois.error)}</span></div>`
     :`<div class="irow"><span class="ik">Registrar</span><span class="iv">${esc(whois.registrar||'–')}</span></div>
-     <div class="irow"><span class="ik">Organisasi</span><span class="iv">${esc(whois.org||'–')}</span></div>
-     <div class="irow"><span class="ik">Terdaftar</span><span class="iv ok">${fmt(whois.creation_date)}</span></div>
-     <div class="irow"><span class="ik">Kadaluarsa</span><span class="iv ${isExpSoon(whois.expiration_date)?'warn':''}">${fmt(whois.expiration_date)}</span></div>
-     <div class="irow"><span class="ik">Nameserver</span><span class="iv" style="font-size:.6rem;line-height:1.8">${ns}</span></div>
-     <div class="irow-note">💡 Domain mendekati expiry perlu segera diperpanjang.</div>`;
+     <div class="irow"><span class="ik">Organization</span><span class="iv">${esc(whois.org||'–')}</span></div>
+     <div class="irow"><span class="ik">Registered</span><span class="iv ok">${fmt(whois.creation_date)}</span></div>
+     <div class="irow"><span class="ik">Expires</span><span class="iv ${isExpSoon(whois.expiration_date)?'warn':''}">${fmt(whois.expiration_date)}</span></div>
+     <div class="irow"><span class="ik">Nameservers</span><span class="iv" style="font-size:.68rem;line-height:1.8">${ns}</span></div>
+     <div class="irow-note">💡 Domains nearing expiry should be renewed promptly.</div>`;
 
   document.getElementById('reconGrid').innerHTML=`
-    <div class="icard"><div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><span class="icard-title">DNS Lookup</span></div>${dns.error?'<span class="icard-badge bad">Error</span>':'<span class="icard-badge ok">Resolved</span>'}</div>${dnsRows}</div>
-    <div class="icard"><div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div><span class="icard-title">WHOIS Registration</span></div>${whois.error?'<span class="icard-badge bad">Error</span>':'<span class="icard-badge ok">Data Ditemukan</span>'}</div>${whoisRows}</div>`;
+    <div class="icard"><div class="icard-header"><div class="icard-header-left"><div class="icard-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><span class="icard-title">DNS Lookup</span></div>${dns.error?'<span class="badge-err">Error</span>':'<span class="badge-ok">Resolved</span>'}</div>${dnsRows}</div>
+    <div class="icard"><div class="icard-header"><div class="icard-header-left"><div class="icard-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div><span class="icard-title">WHOIS Registration</span></div>${whois.error?'<span class="badge-err">Error</span>':'<span class="badge-ok">Found</span>'}</div>${whoisRows}</div>`;
 
   // SSL
   if(ssl.error){
-    document.getElementById('sslSection').innerHTML=`<div class="ebox" style="margin-bottom:24px">⚠ SSL Error: ${esc(ssl.error)}</div>`;
+    document.getElementById('sslSection').innerHTML=`<div class="ebox">⚠ SSL Error: ${esc(ssl.error)}</div>`;
   } else if(ssl.valid){
-    const d=ssl.days_remaining||0;const dc=d<30?'#ff2d4a':d<60?'#ffcc00':'#00e57a';
+    const d=ssl.days_remaining||0;const dc=d<30?'var(--red)':d<60?'var(--yellow)':'var(--green)';
     const dpct=Math.min(100,Math.round((d/365)*100));
-    const RR=55,C2=2*Math.PI*RR,DOFF=C2-(dpct/100)*C2;
-    document.getElementById('sslSection').innerHTML=`<div class="ssl-layout" style="margin-bottom:24px">
+    const RR=50,C2=2*Math.PI*RR,DOFF=C2-(dpct/100)*C2;
+    document.getElementById('sslSection').innerHTML=`<div class="ssl-layout">
       <div class="ssl-dial">
-        <svg viewBox="0 0 130 130">
-          <circle cx="65" cy="65" r="${RR}" fill="none" stroke="var(--s4)" stroke-width="10"/>
-          <circle cx="65" cy="65" r="${RR}" fill="none" stroke="${dc}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C2}" stroke-dashoffset="${C2}" transform="rotate(-90 65 65)" style="transition:stroke-dashoffset 1.3s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 0 6px ${dc})" id="sslArc"/>
-          <text x="65" y="60" text-anchor="middle" fill="${dc}" font-family="Orbitron" font-size="22" font-weight="900" letter-spacing="1">${d}</text>
-          <text x="65" y="75" text-anchor="middle" fill="var(--tm)" font-family="IBM Plex Mono" font-size="6" letter-spacing="2">HARI TERSISA</text>
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="${RR}" fill="none" stroke="#e5e5ea" stroke-width="9"/>
+          <circle cx="60" cy="60" r="${RR}" fill="none" stroke="${dc}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C2}" stroke-dashoffset="${C2}" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1.3s ease" id="sslArc"/>
+          <text x="60" y="55" text-anchor="middle" fill="${dc}" font-family="Inter,-apple-system,sans-serif" font-size="22" font-weight="700" letter-spacing="-1">${d}</text>
+          <text x="60" y="70" text-anchor="middle" fill="#aeaeb2" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="500" letter-spacing="1">DAYS LEFT</text>
         </svg>
-        <div class="ssl-dial-lbl">Validitas Sertifikat</div>
-        <div style="font-family:var(--mono);font-size:.6rem;color:${dc};border:1px solid ${dc};padding:2px 10px;background:${dc}22">${d<30?'⚠ HAMPIR EXPIRY':d<60?'PERLU PERHATIAN':'MASIH VALID'}</div>
+        <div class="ssl-dial-lbl">Certificate Validity</div>
+        <span class="badge-ok" style="background:${d<30?'var(--red-light)':d<60?'var(--yellow-light)':'var(--green-light)'};color:${dc}">${d<30?'⚠ Expiring Soon':d<60?'Needs Attention':'Valid'}</span>
       </div>
-      <div class="icard">
-        <div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><span class="icard-title">Detail Sertifikat</span></div><span class="icard-badge ok">✓ Valid</span></div>
+      <div class="icard"><div class="icard-header"><div class="icard-header-left"><div class="icard-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><span class="icard-title">Certificate Details</span></div><span class="badge-ok">✓ Valid</span></div>
         <div class="irow"><span class="ik">Subject</span><span class="iv">${esc(ssl.subject||'–')}</span></div>
         <div class="irow"><span class="ik">Issuer / CA</span><span class="iv ok">${esc(ssl.issuer||'–')}</span></div>
-        <div class="irow"><span class="ik">Diterbitkan</span><span class="iv dim">${esc(ssl.issued_on||'–')}</span></div>
-        <div class="irow"><span class="ik">Kadaluarsa</span><span class="iv" style="color:${dc}">${esc(ssl.expires||'–')}</span></div>
-        <div class="irow"><span class="ik">Sisa Hari</span><span class="iv" style="color:${dc}">${d} hari</span></div>
+        <div class="irow"><span class="ik">Issued On</span><span class="iv dim">${esc(ssl.issued_on||'–')}</span></div>
+        <div class="irow"><span class="ik">Expires</span><span class="iv" style="color:${dc}">${esc(ssl.expires||'–')}</span></div>
+        <div class="irow"><span class="ik">Days Left</span><span class="iv" style="color:${dc}">${d} days</span></div>
       </div>
-      <div class="icard">
-        <div class="icard-hd"><div class="icard-hd-left"><div class="icard-hd-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h10c2.76 0 5-2.24 5-5s-2.24-5-5-5zM7 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg></div><span class="icard-title">Koneksi TLS</span></div></div>
-        <div class="irow"><span class="ik">Versi TLS</span><span class="iv ok">${esc(ssl.tls_version||'–')}</span></div>
-        <div class="irow"><span class="ik">Cipher</span><span class="iv dim" style="font-size:.58rem">${esc(ssl.cipher||'–')}</span></div>
-        <div class="irow"><span class="ik">SAN</span><span class="iv">${(ssl.san||[]).length} domain</span></div>
-        ${ssl.san&&ssl.san.length?`<div class="irow"><span class="ik">Domain SANs</span><span class="iv dim" style="font-size:.58rem;line-height:1.8">${ssl.san.slice(0,5).map(esc).join('<br>')}</span></div>`:''}
+      <div class="icard"><div class="icard-header"><div class="icard-header-left"><div class="icard-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h10c2.76 0 5-2.24 5-5s-2.24-5-5-5zM7 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg></div><span class="icard-title">TLS Connection</span></div></div>
+        <div class="irow"><span class="ik">TLS Version</span><span class="iv ok">${esc(ssl.tls_version||'–')}</span></div>
+        <div class="irow"><span class="ik">Cipher</span><span class="iv dim" style="font-size:.68rem">${esc(ssl.cipher||'–')}</span></div>
+        <div class="irow"><span class="ik">SAN Domains</span><span class="iv">${(ssl.san||[]).length} domains</span></div>
+        ${ssl.san&&ssl.san.length?`<div class="irow"><span class="ik">SANs</span><span class="iv dim" style="font-size:.68rem;line-height:1.8">${ssl.san.slice(0,5).map(esc).join('<br>')}</span></div>`:''}
       </div>
     </div>`;
     setTimeout(()=>{const a=document.getElementById('sslArc');if(a)a.style.strokeDashoffset=DOFF;},200);
   } else {
-    document.getElementById('sslSection').innerHTML=`<div class="ebox" style="margin-bottom:24px">⚠ Tidak ada sertifikat SSL valid — koneksi tidak terenkripsi!</div>`;
+    document.getElementById('sslSection').innerHTML=`<div class="ebox">⚠ No valid SSL certificate — connection is unencrypted!</div>`;
   }
 
   // Headers
   const HLIST=['Content-Security-Policy','Strict-Transport-Security','X-Frame-Options','X-Content-Type-Options','X-XSS-Protection','Referrer-Policy'];
   const extraChecks=[
-    {name:'XSS Detection',state:xss?'fail':'ok',explain:'Hasil pengujian Cross-Site Scripting.',why:xss?'Script injection berhasil pada '+xssFindings.length+' parameter.':'Tidak ada XSS terdeteksi.'},
-    {name:'SQL Injection Test',state:sqli?'fail':'ok',explain:'Hasil pengujian SQL Injection.',why:sqli?'SQL Injection ditemukan pada '+sqliFindings.length+' parameter — gunakan prepared statements.':'Database terlindungi.'},
+    {name:'XSS Detection',state:xss?'fail':'ok',explain:'Cross-Site Scripting test result.',why:xss?'Script injection succeeded on '+xssFindings.length+' parameters.':'No XSS detected.'},
+    {name:'SQL Injection Test',state:sqli?'fail':'ok',explain:'SQL Injection test result.',why:sqli?'SQL Injection found in '+sqliFindings.length+' parameters — use prepared statements.':'Database is protected.'},
   ];
   const allHeaders=[...extraChecks,...HLIST.map(h=>({name:h,state:H[h]==='present'?'ok':'miss',explain:HDATA[h]?.explain||'',why:HDATA[h]?.why||''}))];
-  document.getElementById('hdrsSection').innerHTML=`<div class="hdrs-wrap">${
-    allHeaders.map(h=>`<div class="hdr-row">
-      <div class="hdr-left"><div class="hdr-name">${h.name}</div>${h.explain?`<div class="hdr-explain">${h.explain}</div>`:''}${h.why?`<div class="hdr-explain" style="color:${h.state==='fail'?'var(--r)':h.state==='miss'?'var(--y)':'var(--g)'}">→ ${h.why}</div>`:''}</div>
-      <div class="hdr-bar-cell"><div class="hdr-track"><div class="hdr-fill ${h.state}"></div></div><div class="hdr-bar-lbl">${h.state==='ok'?'✓ Aktif':h.state==='fail'?'✗ Rentan':'— Tidak ada'}</div></div>
-      <div class="hdr-badge-cell"><div class="hdrbadge ${h.state}">${h.state==='ok'?'PASS':h.state==='fail'?'FAIL':'MISS'}</div></div>
-    </div>`).join('')
-  }</div>`;
+  document.getElementById('hdrsSection').innerHTML=`<div class="hdrs-wrap" style="margin-bottom:16px">${allHeaders.map(h=>`<div class="hdr-row"><div class="hdr-left"><div class="hdr-name">${h.name}</div>${h.explain?`<div class="hdr-explain">${h.explain}</div>`:''}${h.why?`<div class="hdr-explain" style="color:${h.state==='fail'?'var(--red)':h.state==='miss'?'var(--yellow)':'var(--green)'};margin-top:2px">→ ${h.why}</div>`:''}</div><div class="hdr-bar-cell"><div class="hdr-track"><div class="hdr-fill ${h.state}"></div></div><div class="hdr-bar-lbl">${h.state==='ok'?'✓ Active':h.state==='fail'?'✗ Vulnerable':'— Missing'}</div></div><div class="hdr-badge-cell"><div class="hdrbadge ${h.state}">${h.state==='ok'?'PASS':h.state==='fail'?'FAIL':'MISS'}</div></div></div>`).join('')}</div>`;
 
-  // ─── SQLI FINDINGS DETAIL ───
-  renderFindings('sqliFindings', sqliFindings, 'sqli');
-
-  // ─── XSS FINDINGS DETAIL ───
-  renderFindings('xssFindings', xssFindings, 'xss');
+  renderFindings('sqliFindings',sqliFindings,'sqli');
+  renderFindings('xssFindings',xssFindings,'xss');
 
   // Tech
   const techAll=tech.all||[];
   const CAT_ORDER=['server','cdn','backend','cms','frontend','analytics','security'];
   if(techAll.length){
     const cats=CAT_ORDER.filter(c=>(tech[c]||[]).length>0);
-    document.getElementById('techSection').innerHTML=`<div class="tech-grid" style="margin-bottom:24px">${cats.map(c=>{const m=CAT_META[c]||{icon:'◆',label:c,color:'var(--t)'};return`<div class="tcat"><div class="tcat-hd"><span class="tcat-ico">${m.icon}</span><span class="tcat-name" style="color:${m.color}">${m.label}</span></div><div class="tcat-items">${(tech[c]||[]).map(n=>`<span class="tp ${c}">${esc(n)}</span>`).join('')}</div></div>`;}).join('')}</div>`;
+    document.getElementById('techSection').innerHTML=`<div class="tech-grid" style="margin-bottom:16px">${cats.map(c=>{const m=CAT_META[c]||{icon:'◆',label:c};return`<div class="tcat"><div class="tcat-header"><span class="tcat-ico">${m.icon}</span><span class="tcat-name">${m.label}</span></div><div class="tcat-items">${(tech[c]||[]).map(n=>`<span class="tp ${c}">${esc(n)}</span>`).join('')}</div></div>`;}).join('')}</div>`;
   } else {
-    document.getElementById('techSection').innerHTML=`<div class="tech-empty" style="margin-bottom:24px">Tidak dapat mendeteksi teknologi${tech.error?'. Error: '+esc(tech.error):'.'}</div>`;
+    document.getElementById('techSection').innerHTML=`<div class="empty-state" style="margin-bottom:16px">No technologies detected${tech.error?'. Error: '+esc(tech.error):'.'}</div>`;
   }
 
   // Ports
@@ -858,31 +999,27 @@ function renderResults(data){
     const OL=PE.filter(([,s])=>s==='open');
     document.getElementById('portSection').innerHTML=`
       <div class="port-summary">
-        <span><span class="dot-open"></span> ${OL.length} Terbuka</span>
-        <span><span class="dot-closed"></span> ${PE.length-OL.length} Tertutup</span>
-        ${OL.length>0?`<span style="color:var(--r);border:1px solid rgba(255,45,74,.2);padding:1px 8px;background:var(--rg)">⚠ Tutup port yang tidak diperlukan</span>`:''}
+        <span><span class="dot-open"></span> ${OL.length} Open</span>
+        <span><span class="dot-closed"></span> ${PE.length-OL.length} Closed</span>
+        ${OL.length>0?`<span style="color:var(--red);font-size:0.72rem;font-weight:500">⚠ Close unnecessary ports</span>`:''}
       </div>
-      <div class="port-grid">${PE.map(([p,s])=>{
-        const pd=PDATA[parseInt(p)]||{name:'Unknown',desc:'Port tidak dikenali.',risk:s==='open'?'MED':'LOW'};
-        const rc=pd.risk==='CRIT'?'var(--r)':pd.risk==='HIGH'?'var(--o)':pd.risk==='MED'?'var(--y)':'var(--tm)';
-        return`<div class="ptile ${s}"><div class="ptile-top"><span class="ptile-dot"></span><span class="ptile-risk" style="color:${rc};border-color:${rc}88">${pd.risk}</span></div><div class="ptile-num">${p}</div><div class="ptile-service">${pd.name}</div><div class="ptile-desc">${pd.desc.slice(0,38)}</div></div>`;
-      }).join('')}</div>`;
+      <div class="port-grid">${PE.map(([p,s])=>{const pd=PDATA[parseInt(p)]||{name:'Unknown',desc:'Unknown port.',risk:s==='open'?'MED':'LOW'};const rc=pd.risk==='CRIT'?'var(--red)':pd.risk==='HIGH'?'#ff6b35':pd.risk==='MED'?'var(--yellow)':'var(--text-tertiary)';return`<div class="ptile ${s}"><div class="ptile-top"><span class="ptile-dot"></span><span class="ptile-risk" style="color:${rc}">${pd.risk}</span></div><div class="ptile-num">${p}</div><div class="ptile-service">${pd.name}</div><div class="ptile-desc">${pd.desc.slice(0,40)}</div></div>`;}).join('')}</div>`;
   } else {
-    document.getElementById('portSection').innerHTML=`<div class="empty">Tidak ada data port scan.</div>`;
+    document.getElementById('portSection').innerHTML=`<div class="empty-state">No port scan data available.</div>`;
   }
 
   // API
   if(api.length){
-    document.getElementById('apiSection').innerHTML=`<div class="api-wrap"><div class="api-header"><span>Status</span><span>Endpoint</span><span>Content-Type</span><span>Method</span></div>${api.map(ep=>`<div class="api-row"><span><span class="acode ${ep.status_code<300?'s2':'s3'}">${ep.status_code}</span></span><span class="apath">${esc(ep.url)}</span><span class="act">${esc(ep.content_type||'–')}</span><span><span class="api-method">GET</span></span></div>`).join('')}</div>`;
+    document.getElementById('apiSection').innerHTML=`<div class="api-wrap" style="margin-bottom:16px"><div class="api-header-row"><span>Status</span><span>Endpoint</span><span>Content-Type</span><span>Method</span></div>${api.map(ep=>`<div class="api-row"><span><span class="acode ${ep.status_code<300?'s2':'s3'}">${ep.status_code}</span></span><span class="apath">${esc(ep.url)}</span><span class="act">${esc(ep.content_type||'–')}</span><span><span class="api-method">GET</span></span></div>`).join('')}</div>`;
   } else {
-    document.getElementById('apiSection').innerHTML=`<div class="empty">Tidak ada endpoint API publik ditemukan.</div>`;
+    document.getElementById('apiSection').innerHTML=`<div class="empty-state" style="margin-bottom:16px">No public API endpoints found.</div>`;
   }
 
   // Links
   document.getElementById('linksCount').textContent=L.length+' URL';
   document.getElementById('linksWrap').innerHTML=L.length
     ?L.map((lnk,i)=>{const ie=!lnk.includes(exDomain(data.target));const lb=lnk.startsWith('mailto:')?'email':lnk.startsWith('tel:')?'tel':ie?'ext':'int';return`<div class="lrow"><span class="ln">${String(i+1).padStart(3,'0')}</span><a class="lu" href="${esc(lnk)}" target="_blank" rel="noopener">${esc(lnk)}</a><span class="lbadge ${lb}">${lb}</span></div>`;}).join('')
-    :`<div class="empty">Tidak ada link ditemukan.</div>`;
+    :`<div class="empty-state">No links found.</div>`;
 }
 
 document.getElementById('urlInput').addEventListener('keydown',e=>{if(e.key==='Enter')runScan();});
