@@ -405,97 +405,140 @@ nav{
 .ghlink svg{width:12px;height:12px;fill:currentColor;}
 
 /* ── AI ASSISTANT PANEL ── */
-/* ── AI ASSISTANT PANEL OVERHAUL ── */
 .ai-panel {
-  width: clamp(300px, 28vw, 400px);
-  background: rgba(4, 9, 20, 0.6);
-  border-right: 1px solid rgba(0, 255, 128, 0.15);
+  width: clamp(300px, 27vw, 380px);
+  background: rgba(8, 12, 24, 0.75);
+  border-right: 1px solid rgba(255,255,255,0.06);
   display: flex; flex-direction: column;
   z-index: 10;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: inset -10px 0 30px rgba(0,0,0,0.5);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
 }
 .ai-hdr {
-  padding: 16px; border-bottom: 1px solid rgba(0,255,128,0.2);
-  font-weight: 800; color: #00ff80; display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(90deg, rgba(0,255,128,0.05), transparent);
-  font-size: 0.85rem; letter-spacing: 1px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: space-between;
 }
-.ai-hdr-l { display: flex; align-items: center; gap: 8px; }
-.ai-status-dot { width: 8px; height: 8px; background: #00ff80; border-radius: 50%; box-shadow: 0 0 8px #00ff80; animation: pulse 2s infinite; }
-@keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 8px #00ff80; } 50% { opacity: 0.4; box-shadow: 0 0 2px #00ff80; } 100% { opacity: 1; box-shadow: 0 0 8px #00ff80; } }
+.ai-hdr-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.ai-hdr-icon {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ai-hdr-icon svg { width: 16px; height: 16px; fill: #fff; }
+.ai-hdr-title { font-size: 0.82rem; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
+.ai-hdr-sub { font-size: 0.63rem; color: var(--text3); margin-top: 1px; }
+.ai-online { display: flex; align-items: center; gap: 5px; font-size: 0.65rem; color: var(--green); font-weight: 600; }
+.ai-online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-.ai-body {
-  flex: 1; overflow-y: auto; padding: 16px;
-  display: flex; flex-direction: column; gap: 14px;
-  font-size: 0.8rem; line-height: 1.5; scroll-behavior: smooth;
+/* Login screen */
+.ai-login {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px; gap: 20px; text-align: center;
 }
-.ai-body::-webkit-scrollbar { width: 4px; }
-.ai-body::-webkit-scrollbar-thumb { background: rgba(0,255,128,0.3); border-radius: 4px; }
+.ai-login-icon {
+  width: 64px; height: 64px; border-radius: 20px;
+  background: linear-gradient(135deg, rgba(var(--blue-rgb,0,122,255),0.15), rgba(0,0,0,0));
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.ai-login-icon svg { width: 32px; height: 32px; fill: var(--blue); opacity: 0.9; }
+.ai-login h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin: 0; }
+.ai-login p { font-size: 0.75rem; color: var(--text3); line-height: 1.6; margin: 0; }
+.ai-google-btn {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; color: #1a1a1a;
+  border: none; border-radius: 10px; padding: 11px 20px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; width: 100%; justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+.ai-google-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.ai-google-btn img { width: 18px; height: 18px; }
+.ai-login-note { font-size: 0.65rem; color: var(--text3); }
+
+/* User avatar in header */
+.ai-user-badge {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 5px 10px 5px 6px; cursor: pointer;
+  transition: background 0.2s;
+}
+.ai-user-badge:hover { background: rgba(255,255,255,0.09); }
+.ai-user-badge img { width: 22px; height: 22px; border-radius: 50%; }
+.ai-user-badge span { font-size: 0.7rem; color: var(--text2); font-weight: 600; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Chat body */
+.ai-body {
+  flex: 1; overflow-y: auto; padding: 14px;
+  display: flex; flex-direction: column; gap: 12px;
+  font-size: 0.78rem; line-height: 1.55; scroll-behavior: smooth;
+}
+.ai-body::-webkit-scrollbar { width: 3px; }
+.ai-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
 
 .ai-msg {
-  padding: 10px 14px; border-radius: 12px;
-  max-width: 90%; word-wrap: break-word; position: relative;
+  padding: 10px 13px; border-radius: 12px;
+  max-width: 88%; word-wrap: break-word; position: relative;
 }
 .ai-msg.bot {
   align-self: flex-start;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
-  border-top-left-radius: 2px;
-  color: var(--text);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border-top-left-radius: 3px; color: var(--text);
 }
-.ai-msg.bot strong { color: #00ff80; font-weight: 600; }
-.ai-msg.bot code { background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; color: #fcee0a; font-family: monospace; font-size: 0.75rem; }
-
+.ai-msg.bot strong { color: var(--blue); font-weight: 600; }
+.ai-msg.bot code { background: rgba(0,0,0,0.35); padding: 1px 5px; border-radius: 4px; color: var(--yellow); font-family: monospace; font-size: 0.73rem; }
 .ai-msg.user {
   align-self: flex-end;
-  background: rgba(0, 255, 128, 0.1);
-  border: 1px solid rgba(0, 255, 128, 0.2);
-  border-top-right-radius: 2px;
-  color: #00ff80;
-}
-.ai-msg.sys {
-  align-self: center; background: transparent; color: var(--text3);
-  font-size: 0.7rem; font-family: monospace; text-align: center; border: none; padding: 4px;
+  background: rgba(0,122,255,0.12);
+  border: 1px solid rgba(0,122,255,0.2);
+  border-top-right-radius: 3px; color: var(--text);
 }
 
+.typing-dot { display:inline-block; width:5px; height:5px; background:var(--text3); border-radius:50%; margin:0 2px; animation:type-anim 1.4s infinite both; }
+.typing-dot:nth-child(1){animation-delay:0s} .typing-dot:nth-child(2){animation-delay:0.2s} .typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes type-anim{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+
+/* Input area */
 .ai-input-wrap {
-  display: flex; border-top: 1px solid rgba(0,255,128,0.2);
-  background: rgba(0,0,0,0.3); padding: 8px; gap: 8px;
+  display: flex; gap: 8px; padding: 10px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  background: rgba(0,0,0,0.2);
 }
 .ai-input {
-  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  padding: 12px 14px; color: var(--text); font-family: var(--font); font-size: 0.8rem;
-  border-radius: 8px; outline: none; transition: border 0.3s;
+  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
+  padding: 10px 13px; color: var(--text); font-family: var(--font); font-size: 0.78rem;
+  border-radius: 9px; outline: none; transition: border 0.2s;
 }
-.ai-input:focus { border-color: rgba(0,255,128,0.4); background: rgba(0,0,0,0.5); }
+.ai-input:focus { border-color: rgba(0,122,255,0.4); }
 .ai-input::placeholder { color: var(--text3); }
-
 .ai-btn {
-  background: rgba(0,255,128,0.15); border: 1px solid rgba(0,255,128,0.3);
-  padding: 0 18px; color: #00ff80; font-family: var(--font); font-weight: 700;
-  border-radius: 8px; cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,122,255,0.2); border: 1px solid rgba(0,122,255,0.3);
+  padding: 0 15px; color: var(--blue); border-radius: 9px; cursor: pointer;
+  transition: all 0.2s; display: flex; align-items: center;
 }
-.ai-btn:hover { background: rgba(0,255,128,0.3); transform: scale(1.02); }
+.ai-btn:hover { background: rgba(0,122,255,0.35); }
 .ai-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
-.typing-dot { display:inline-block; width:4px; height:4px; background:#00ff80; border-radius:50%; margin:0 2px; animation:type 1.4s infinite both; }
-.typing-dot:nth-child(1){ animation-delay:0s; }
-.typing-dot:nth-child(2){ animation-delay:0.2s; }
-.typing-dot:nth-child(3){ animation-delay:0.4s; }
-@keyframes type { 0%, 80%, 100%{transform:scale(0);} 40%{transform:scale(1);} }
-
-
 @media(max-width:768px){
-  .ai-panel {
-    width: 100%; height: 350px; border-right: none;
-    border-bottom: 1px solid rgba(0,255,65,0.3);
-  }
+  .ai-panel { width:100%; height:340px; border-right:none; border-bottom:1px solid rgba(255,255,255,0.07); }
 }
 </style>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+  const _fbApp = firebase.initializeApp({
+    apiKey: "AIzaSyBYTTKfHwrF-JiimDV68PMi_TNt3P3uXBs",
+    authDomain: "nightprobe-v1.firebaseapp.com",
+    projectId: "nightprobe-v1",
+  });
+</script>
 </head>
 <body>
 
@@ -521,15 +564,46 @@ nav{
 
   <!-- AI Assistant -->
   <div class="ai-panel">
+    <!-- Header -->
     <div class="ai-hdr">
-      <span>[#]</span> SYSTEM_AI_ASSISTANT
+      <div class="ai-hdr-brand">
+        <div class="ai-hdr-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 0 2h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1 0-2h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 11a5 5 0 0 0-5 5v1h16v-1a5 5 0 0 0-5-5H9m3-4a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1z"/></svg>
+        </div>
+        <div>
+          <div class="ai-hdr-title">NightProbe AI</div>
+          <div class="ai-hdr-sub">Powered by Gemini</div>
+        </div>
+      </div>
+      <div id="aiUserBadge" style="display:none" class="ai-user-badge" onclick="aiSignOut()">
+        <img id="aiUserPhoto" src="" alt="">
+        <span id="aiUserName"></span>
+      </div>
     </div>
-    <div class="ai-body" id="aiChatBody">
-      <div class="ai-msg bot">Hello, Operator. I am the NightProbe Assistant. Analyze a target to begin.</div>
+
+    <!-- Login screen (shown before login) -->
+    <div class="ai-login" id="aiLoginScreen">
+      <div class="ai-login-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 0 2h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1 0-2h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>
+      </div>
+      <h3>NightProbe AI</h3>
+      <p>Asisten keamanan siber pintar yang bisa menjawab apa pun — tentang keamanan web, kode, atau IT.</p>
+      <button class="ai-google-btn" id="aiGoogleBtn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Sign in with Google
+      </button>
+      <div class="ai-login-note">Gratis. Tidak ada biaya. Data Anda aman.</div>
     </div>
-    <div class="ai-input-wrap">
-      <input type="text" class="ai-input" id="aiInput" placeholder="Ask about vulnerabilities...">
-      <button class="ai-btn" id="aiBtn">SEND</button>
+
+    <!-- Chat screen (shown after login) -->
+    <div id="aiChatScreen" style="display:none; flex:1; flex-direction:column; overflow:hidden">
+      <div class="ai-body" id="aiChatBody"></div>
+      <div class="ai-input-wrap">
+        <input type="text" class="ai-input" id="aiInput" placeholder="Tanya apa saja...">
+        <button class="ai-btn" id="aiBtn">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1241,108 +1315,144 @@ function renderResults(data){
 
 document.getElementById('urlInput').addEventListener('keydown', e=>{ if(e.key==='Enter') runScan(); });
 
-// ── AI ASSISTANT LOGIC (REAL LLM) ──
-const aiChatBody = document.getElementById('aiChatBody');
-const aiInput = document.getElementById('aiInput');
-const aiBtn = document.getElementById('aiBtn');
-let aiContextData = null; 
+// ── AI ASSISTANT LOGIC v3 ──
+let aiFirebaseToken = null;
+let aiContextData   = null;
+let aiCurrentUser   = null;
 
-// Markdown parser sederhana untuk tebal dan kode
+// ── Firebase Auth Init ──
+(function initFirebaseAuth() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyBYTTKfHwrF-JiimDV68PMi_TNt3P3uXBs",
+    authDomain: "nightprobe-v1.firebaseapp.com",
+    projectId: "nightprobe-v1",
+    storageBucket: "nightprobe-v1.appspot.com",
+    messagingSenderId: "897669255748",
+    appId: "1:897669255748:web:nightprobev1"
+  };
+  // Firebase already initialized by existing config; just hook Auth
+  try {
+    const auth = firebase.auth ? firebase.auth() : null;
+    if (!auth) { console.warn("Firebase Auth not available"); return; }
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        aiCurrentUser = user;
+        user.getIdToken().then(t => { aiFirebaseToken = t; });
+        showAiChatScreen(user);
+      } else {
+        aiCurrentUser = null;
+        aiFirebaseToken = null;
+        showAiLoginScreen();
+      }
+    });
+    document.getElementById('aiGoogleBtn').addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(e => console.error('Login failed', e));
+    });
+  } catch(e) { console.error('Firebase Auth init error:', e); }
+})();
+
+function aiSignOut() {
+  if(confirm('Sign out dari NightProbe AI?')) {
+    try { firebase.auth().signOut(); } catch(e){}
+  }
+}
+
+function showAiLoginScreen() {
+  document.getElementById('aiLoginScreen').style.display  = 'flex';
+  document.getElementById('aiChatScreen').style.display   = 'none';
+  document.getElementById('aiUserBadge').style.display    = 'none';
+}
+
+function showAiChatScreen(user) {
+  document.getElementById('aiLoginScreen').style.display  = 'none';
+  document.getElementById('aiChatScreen').style.display   = 'flex';
+  document.getElementById('aiUserBadge').style.display    = 'flex';
+  document.getElementById('aiUserName').textContent = user.displayName?.split(' ')[0] || 'User';
+  document.getElementById('aiUserPhoto').src = user.photoURL || '';
+  if (!document.getElementById('aiChatBody').children.length) {
+    appendAiMsg(`Selamat datang, <strong>${user.displayName?.split(' ')[0] || 'Operator'}</strong>! Saya siap membantu. Tanya apa saja soal keamanan web, koding, atau IT.`, 'bot', true);
+  }
+}
+
+// ── Chat helpers ──
 function parseMD(str) {
-  let s = str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  s = s.replace(/`(.*?)`/g, '<code>$1</code>');
-  s = s.replace(/\n/g, '<br>');
-  return s;
+  return str
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`(.*?)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
 }
 
 function appendAiMsg(text, sender, isHTML=false) {
+  const body = document.getElementById('aiChatBody');
   const div = document.createElement('div');
   div.className = 'ai-msg ' + sender;
   if(isHTML) div.innerHTML = text;
-  else div.innerHTML = parseMD(text.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
-  aiChatBody.appendChild(div);
-  aiChatBody.scrollTop = aiChatBody.scrollHeight;
-  return div; // Kembalikan elemen agar bisa diubah (untuk animasi ngetik)
+  else div.innerHTML = parseMD(text);
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+  return div;
 }
 
 function showTyping() {
   return appendAiMsg('<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>', 'bot', true);
 }
 
-// Integrasi API LLM (Gemini)
-async function getLLMResponse(query) {
-  let apiKey = localStorage.getItem('NP_GEMINI_KEY');
-  
-  if(query.startsWith('/key ')) {
-    const key = query.replace('/key ','').trim();
-    localStorage.setItem('NP_GEMINI_KEY', key);
-    return "API Key berhasil disimpan! Saya sekarang siap menjawab pertanyaan apa pun secara cerdas. Silakan tanya apa saja.";
-  }
-  
-  if(!apiKey) {
-    return "<strong>[!] MODE OFFLINE AKTIF</strong><br>Saat ini saya hanya menggunakan simulasi lokal. Untuk membuat saya <strong>bisa menjawab apa saja</strong> dan menjadi AI pintar sungguhan, masukkan API Key Google Gemini Anda secara gratis dengan perintah:<br><br><code>/key [KODE_API_ANDA]</code><br><br><em>Dapatkan key gratis di <a href='https://aistudio.google.com/' target='_blank' style='color:#00ff80'>aistudio.google.com</a>. (Key hanya disimpan di browser Anda).</em>";
-  }
+// ── Call backend AI endpoint ──
+const BACKEND = 'https://fakhri269-nightprobe-security.hf.space';
 
-  // Siapkan konteks dari scan jika ada
-  let sysContext = "Kamu adalah NightProbe AI, asisten cybersecurity ahli berbahasa Indonesia yang membantu user menganalisis keamanan web, menjawab seputar IT, koding, dan hacking edukasional.";
+async function getLLMResponse(message) {
+  // Refresh token
+  if(aiCurrentUser) {
+    try { aiFirebaseToken = await aiCurrentUser.getIdToken(true); } catch(e){}
+  }
+  if(!aiFirebaseToken) return 'Silakan login terlebih dahulu.';
+
+  let context = '';
   if(aiContextData && !aiContextData.error) {
-    sysContext += `
-
-Website Target Saat Ini: ${aiContextData.target}
-Hasil scan singkat: Ports terbuka: ${Object.keys(aiContextData.ports||{}).length}. XSS: ${aiContextData.xss?.vulnerable?'Ya':'Tidak'}. SQLi: ${aiContextData.sqli?.vulnerable?'Ya':'Tidak'}. Bantu user jika mereka menanyakan target ini.`;
+    context = `Target: ${aiContextData.target}. XSS: ${aiContextData.xss?.vulnerable?'Ya':'Tidak'}. SQLi: ${aiContextData.sqli?.vulnerable?'Ya':'Tidak'}. Open ports: ${Object.entries(aiContextData.ports||{}).filter(([,s])=>s==='open').map(([p])=>p).join(', ')||'none'}.`;
   }
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const payload = {
-      contents: [{ parts: [{ text: `System: ${sysContext}
-
-User: ${query}` }] }]
-    };
-    const res = await fetch(url, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const res = await fetch(`${BACKEND}/ai-chat/`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ firebase_token: aiFirebaseToken, message, context })
+    });
     const data = await res.json();
-    if(data.error) {
-      if(data.error.code===400 || data.error.message.includes('API key')) {
-        localStorage.removeItem('NP_GEMINI_KEY');
-        return "<strong>[!] API KEY INVALID</strong><br>Key yang dimasukkan salah. Masukkan ulang dengan <code>/key [API_KEY]</code>.";
-      }
-      return "[!] Gagal terhubung ke server AI: " + data.error.message;
-    }
-    return data.candidates[0].content.parts[0].text;
+    if(data.error) return `[!] ${data.error}`;
+    return data.reply;
   } catch(e) {
-    return "[!] Gagal memanggil AI. Pastikan koneksi internet Anda stabil. Detail: " + e.message;
+    return `[!] Gagal menghubungi server AI: ${e.message}`;
   }
 }
 
 async function handleAiSend() {
-  const txt = aiInput.value.trim();
+  const input = document.getElementById('aiInput');
+  const txt = input.value.trim();
   if(!txt) return;
   appendAiMsg(txt, 'user');
-  aiInput.value = '';
-  
+  input.value = '';
   const typingEl = showTyping();
-  
   const reply = await getLLMResponse(txt);
-  
-  aiChatBody.removeChild(typingEl);
+  document.getElementById('aiChatBody').removeChild(typingEl);
   appendAiMsg(reply, 'bot', true);
 }
 
-aiBtn.addEventListener('click', handleAiSend);
-aiInput.addEventListener('keydown', e => { if(e.key === 'Enter') handleAiSend(); });
+document.getElementById('aiBtn').addEventListener('click', handleAiSend);
+document.getElementById('aiInput').addEventListener('keydown', e => { if(e.key==='Enter') handleAiSend(); });
 
-// Hook into existing renderResults to feed context
+// ── Hook into scan results ──
 const oldRender = window.renderResults || function(){};
 window.renderResults = function(data) {
   aiContextData = data;
-  if(data && !data.error) {
-    appendAiMsg(`[+] Scan keamanan untuk <strong>${data.target}</strong> selesai. Saya siap menganalisis detail celahnya, tanyakan saja!`, 'bot', true);
-  } else if(data && data.error) {
-    appendAiMsg(`[!] Proses scan gagal: ${data.error}`, 'bot');
+  if(document.getElementById('aiChatScreen').style.display !== 'none') {
+    if(data && !data.error) appendAiMsg(`[+] Scan selesai untuk <strong>${data.target}</strong>. Tanyakan apa saja tentang hasilnya!`, 'bot', true);
+    else if(data?.error) appendAiMsg(`[!] Scan gagal: ${data.error}`, 'bot');
   }
   oldRender(data);
 };
-
 
 </script>
 
