@@ -716,9 +716,25 @@ const globeState = {
   function createArc(fromLat, fromLon, toLat, toLon){
     const start = ll2v3(fromLat, fromLon);
     const end = ll2v3(toLat, toLon);
-    const mid = start.clone().add(end).normalize().multiplyScalar(1.6);
-    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
-    const pts = curve.getPoints(80);
+    
+    // Great circle interpolation using Quaternions
+    const startDir = start.clone().normalize();
+    const endDir = end.clone().normalize();
+    const qEnd = new THREE.Quaternion().setFromUnitVectors(startDir, endDir);
+    
+    const dist = start.distanceTo(end);
+    const maxHeight = dist * 0.35; // Arc height scales with distance
+    const pts = [];
+    const numSegments = 64;
+    
+    for(let i=0; i<=numSegments; i++){
+      const t = i / numSegments;
+      const q = new THREE.Quaternion().slerp(qEnd, t);
+      const dir = startDir.clone().applyQuaternion(q);
+      const height = 1.01 + Math.sin(t * Math.PI) * maxHeight;
+      pts.push(dir.multiplyScalar(height));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts);
 
     // Main arc tube
     const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.015, 8, false);
