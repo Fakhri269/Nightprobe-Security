@@ -406,12 +406,11 @@ nav{
 
 /* ── AI ASSISTANT PANEL ── */
 .ai-panel {
-  position: absolute; top: 15px; left: 15px; bottom: 15px;
-  width: clamp(280px, 30vw, 360px);
-  background: rgba(0, 5, 15, 0.7);
-  border: 1px solid var(--green);
-  z-index: 50; display: flex; flex-direction: column;
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+  width: clamp(280px, 25vw, 350px);
+  background: rgba(0, 3, 10, 0.85);
+  border-right: 1px solid rgba(0,255,65,0.2);
+  display: flex; flex-direction: column;
+  z-index: 10;
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 .ai-hdr {
@@ -462,9 +461,8 @@ nav{
 
 @media(max-width:768px){
   .ai-panel {
-    position: relative; top: auto; left: auto; bottom: auto;
-    width: 100%; height: 350px; border-left: none; border-right: none;
-    border-bottom: 1px solid var(--green);
+    width: 100%; height: 350px; border-right: none;
+    border-bottom: 1px solid rgba(0,255,65,0.3);
   }
 }
 </style>
