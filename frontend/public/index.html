@@ -533,11 +533,16 @@ nav{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-  const _fbApp = firebase.initializeApp({
-    apiKey: "AIzaSyBYTTKfHwrF-JiimDV68PMi_TNt3P3uXBs",
-    authDomain: "nightprobe-v1.firebaseapp.com",
-    projectId: "nightprobe-v1",
-  });
+  try {
+    firebase.initializeApp({
+      apiKey: "AIzaSyBYTTKfHwrF-JiimDV68PMi_TNt3P3uXBs",
+      authDomain: "nightprobe-v1.firebaseapp.com",
+      projectId: "nightprobe-v1",
+      storageBucket: "nightprobe-v1.appspot.com",
+      messagingSenderId: "897669255748",
+      appId: "1:897669255748:web:6d0e9c4f3e0b7a1a"
+    });
+  } catch(e) { console.warn('Firebase init:', e.message); }
 </script>
 </head>
 <body>
@@ -1322,15 +1327,7 @@ let aiCurrentUser   = null;
 
 // ── Firebase Auth Init ──
 (function initFirebaseAuth() {
-  const firebaseConfig = {
-    apiKey: "AIzaSyBYTTKfHwrF-JiimDV68PMi_TNt3P3uXBs",
-    authDomain: "nightprobe-v1.firebaseapp.com",
-    projectId: "nightprobe-v1",
-    storageBucket: "nightprobe-v1.appspot.com",
-    messagingSenderId: "897669255748",
-    appId: "1:897669255748:web:nightprobev1"
-  };
-  // Firebase already initialized by existing config; just hook Auth
+  // Firebase already initialized in <head>. Just hook Auth.
   try {
     const auth = firebase.auth ? firebase.auth() : null;
     if (!auth) { console.warn("Firebase Auth not available"); return; }
