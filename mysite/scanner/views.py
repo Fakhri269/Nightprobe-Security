@@ -2,8 +2,12 @@
 views.py — NightProbe Security Scanner
 Main request handler. Runs all scan modules concurrently using threads.
 """
+import os
+import json
+import requests as http_requests
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError
 
@@ -94,3 +98,65 @@ def scan(request):
                     results[key] = {"error": str(e)}
 
     return JsonResponse(results)
+
+
+@csrf_exempt
+def ai_chat(request):
+    """
+    AI Chat endpoint. Accepts POST with {firebase_token, message, context}.
+    Verifies Firebase ID token, then calls Gemini API using server-side key.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        body = json.loads(request.body)
+        firebase_token = body.get('firebase_token', '')
+        message = body.get('message', '').strip()
+        context = body.get('context', '')
+    except Exception:
+        return JsonResponse({'error': 'Invalid JSON body'}, status=400)
+
+    if not message:
+        return JsonResponse({'error': 'Message is required'}, status=400)
+
+    # Verify Firebase ID Token using Google's public tokeninfo endpoint
+    if not firebase_token:
+        return JsonResponse({'error': 'Authentication required. Please sign in.'}, status=401)
+
+    try:
+        verify_url = f'https://oauth2.googleapis.com/tokeninfo?id_token={firebase_token}'
+        verify_resp = http_requests.get(verify_url, timeout=5)
+        token_data = verify_resp.json()
+        if 'error' in token_data or 'sub' not in token_data:
+            return JsonResponse({'error': 'Invalid or expired session. Please sign in again.'}, status=401)
+    except Exception as e:
+        return JsonResponse({'error': f'Could not verify session: {str(e)}'}, status=401)
+
+    # Get Gemini API key from environment
+    gemini_key = os.environ.get('GEMINI_API_KEY', '')
+    if not gemini_key:
+        return JsonResponse({'error': 'AI service not configured on server. Contact admin.'}, status=503)
+
+    # Build system prompt
+    system_prompt = """Kamu adalah NightProbe AI, asisten cybersecurity ahli yang berbicara bahasa Indonesia.
+Kamu bisa membantu: analisis keamanan web, menjelaskan celah (XSS, SQLi, dll), menulis kode patch/fix, menjawab pertanyaan IT, koding, dan hacking edukasional.
+Jawab dengan format Markdown yang rapi dan ringkas."""
+
+    if context:
+        system_prompt += f"\n\nKonteks scan website saat ini:\n{context}"
+
+    full_prompt = f"{system_prompt}\n\nUser: {message}"
+
+    # Call Gemini API
+    try:
+        gemini_url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}'
+        payload = {'contents': [{'parts': [{'text': full_prompt}]}]}
+        resp = http_requests.post(gemini_url, json=payload, timeout=30)
+        data = resp.json()
+        if 'error' in data:
+            return JsonResponse({'error': f"Gemini error: {data['error'].get('message', 'Unknown')}"}, status=502)
+        reply = data['candidates'][0]['content']['parts'][0]['text']
+        return JsonResponse({'reply': reply})
+    except Exception as e:
+        return JsonResponse({'error': f'AI call failed: {str(e)}'}, status=502)

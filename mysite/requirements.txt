@@ -16,3 +16,6 @@ beautifulsoup4==4.12.3
 dnspython
 python-whois
 tldextract
+
+# AI endpoint dependencies
+google-auth==2.29.0

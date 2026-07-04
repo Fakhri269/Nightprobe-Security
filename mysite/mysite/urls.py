@@ -6,4 +6,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home),
     path('scan/', views.scan),
+    path('ai-chat/', views.ai_chat),
 ]
