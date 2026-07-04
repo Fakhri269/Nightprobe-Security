@@ -1251,8 +1251,7 @@ let aiContextData = null;
 function parseMD(str) {
   let s = str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/`(.*?)`/g, '<code>$1</code>');
-  s = s.replace(/
-/g, '<br>');
+  s = s.replace(/\n/g, '<br>');
   return s;
 }
 
