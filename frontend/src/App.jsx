@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './index.css';
 import './firebase';
+import Globe from './Globe';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -40,48 +41,46 @@ function App() {
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 2rem' }}>
-      <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-        <div className="radar"></div>
-        <h1 className="text-gradient">NightProbe</h1>
-        <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '1.125rem' }}>
-          Advanced Web Security Scanner
-        </p>
-      </div>
+    <>
+      <div className="main-content">
+        <div className="container" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: results ? 'flex-start' : 'center' }}>
+          
+          <div style={{ 
+            textAlign: 'center', 
+            marginBottom: results ? '2rem' : '2rem',
+            transition: 'all 0.5s ease',
+            transform: results ? 'scale(0.8)' : 'scale(1)',
+            transformOrigin: 'top center'
+          }}>
+            {!results && (
+              <div style={{ marginBottom: '2rem' }}>
+                <Globe scanning={isScanning} />
+              </div>
+            )}
+            <h1 className="text-gradient">NightProbe</h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '1.125rem' }}>
+              Advanced Web Security Scanner
+            </p>
+          </div>
 
-      <form onSubmit={handleScan} className="input-group">
-        <input
-          type="text"
-          className="input-field"
-          placeholder="https://target.com"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          disabled={isScanning}
-          required
-        />
-        <button type="submit" className="btn btn-primary" disabled={isScanning}>
-          {isScanning ? 'Scanning...' : 'Launch Scan'}
-        </button>
-      </form>
+          {error && (
+            <div className="glass-panel" style={{ marginBottom: '2rem', padding: '1rem', borderLeft: '4px solid var(--accent-danger)' }}>
+              <p style={{ color: 'var(--accent-danger)' }}>{error}</p>
+            </div>
+          )}
 
-      {error && (
-        <div className="glass-panel" style={{ marginTop: '2rem', padding: '1rem', borderLeft: '4px solid var(--accent-danger)' }}>
-          <p style={{ color: 'var(--accent-danger)' }}>{error}</p>
-        </div>
-      )}
+          {isScanning && (
+            <div className="loader-container" style={{ margin: 'auto' }}>
+              <div className="spinner"></div>
+              <p className="mono" style={{ color: 'var(--accent-primary)', marginTop: '1rem' }}>Initializing probes... intercepting signals...</p>
+            </div>
+          )}
 
-      {isScanning && (
-        <div className="loader-container">
-          <div className="spinner"></div>
-          <p className="mono" style={{ color: 'var(--accent-primary)' }}>Initializing probes... intercepting signals...</p>
-        </div>
-      )}
-
-      {results && !isScanning && (
-        <div style={{ marginTop: '4rem' }}>
-          <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>
-            Scan Results for <span className="text-gradient">{results.target}</span>
-          </h2>
+          {results && !isScanning && (
+            <div style={{ paddingBottom: '2rem' }}>
+              <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                Scan Results for <span className="text-gradient">{results.target}</span>
+              </h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
             
@@ -208,7 +207,26 @@ function App() {
           </div>
         </div>
       )}
-    </div>
+        </div>
+      </div>
+
+      <div className="bottom-input-area">
+        <form onSubmit={handleScan} className="input-group">
+          <input
+            type="text"
+            className="input-field"
+            placeholder="Enter target URL to scan (e.g., https://example.com)"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            disabled={isScanning}
+            required
+          />
+          <button type="submit" className="btn btn-primary" disabled={isScanning}>
+            {isScanning ? 'Scanning...' : 'Launch'}
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
 
