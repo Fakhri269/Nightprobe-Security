@@ -120,15 +120,16 @@ def ai_chat(request):
     if not message:
         return JsonResponse({'error': 'Message is required'}, status=400)
 
-    # Verify Firebase ID Token using Google's public tokeninfo endpoint
+    # Verify Firebase ID Token using Firebase REST API
     if not firebase_token:
         return JsonResponse({'error': 'Authentication required. Please sign in.'}, status=401)
 
     try:
-        verify_url = f'https://oauth2.googleapis.com/tokeninfo?id_token={firebase_token}'
-        verify_resp = http_requests.get(verify_url, timeout=5)
+        api_key = "AIzaSyDnV1OVyK2hGm4BPqzrI3RNNb2Lz58nxto" # Public Firebase API key
+        verify_url = f'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={api_key}'
+        verify_resp = http_requests.post(verify_url, json={"idToken": firebase_token}, timeout=10)
         token_data = verify_resp.json()
-        if 'error' in token_data or 'sub' not in token_data:
+        if 'error' in token_data:
             return JsonResponse({'error': 'Invalid or expired session. Please sign in again.'}, status=401)
     except Exception as e:
         return JsonResponse({'error': f'Could not verify session: {str(e)}'}, status=401)
