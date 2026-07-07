@@ -1154,12 +1154,36 @@ async function runScan(){
   // On mobile, scroll to sidebar
   if(window.innerWidth<=768) document.getElementById('sidebarEl').scrollIntoView({behavior:'smooth'});
 
-  const [,data] = await Promise.all([
-    animProgress(host),
-    fetch(`https://zetianus-nightprobe-backend.hf.space/scan/?url=${encodeURIComponent(url)}`)
-      .then(r=>{if(!r.ok||!r.headers.get('content-type')?.includes('json'))throw new Error(`Server error ${r.status}`);return r.json();})
-      .catch(e=>({error:e.message}))
-  ]);
+  // Fetch scan results with retry logic
+  let data;
+  const BACKEND_URL = `https://zetianus-nightprobe-backend.hf.space/scan/?url=${encodeURIComponent(url)}`;
+  const fetchScan = async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 90000);
+    try {
+      const r = await fetch(BACKEND_URL, { signal: controller.signal });
+      clearTimeout(timer);
+      const ct = r.headers.get('content-type') || '';
+      if (!ct.includes('json')) {
+        const txt = await r.text();
+        console.error('Non-JSON response:', txt.slice(0, 300));
+        throw new Error(`Server returned non-JSON (status ${r.status}). Backend mungkin sedang restart, coba lagi dalam 30 detik.`);
+      }
+      const json = await r.json();
+      return json;
+    } catch(e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') throw new Error('Scan timeout (>90s). Target mungkin sangat lambat.');
+      throw e;
+    }
+  };
+
+  try {
+    const [, scanResult] = await Promise.all([animProgress(host), fetchScan()]);
+    data = scanResult;
+  } catch(e) {
+    data = { error: e.message };
+  }
 
   setProgress(100,9); await sleep(350);
   stopChips();
