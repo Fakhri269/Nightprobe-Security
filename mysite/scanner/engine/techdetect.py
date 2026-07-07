@@ -6,7 +6,8 @@ import requests
 import warnings
 warnings.filterwarnings("ignore")
 
-HEADERS = {"User-Agent": "NightProbe-Scanner/1.0"}
+from .common import BROWSER_HEADERS
+HEADERS = BROWSER_HEADERS
 
 # Pattern: (category, name, match_fn)
 # match_fn receives: headers dict (lowercase keys), html body string

@@ -19,7 +19,8 @@ PAYLOADS = [
 PARAMS = ["q", "s", "id", "search", "query", "keyword", "term",
           "input", "name", "page", "url", "redirect", "ref", "next"]
 
-HEADERS = {"User-Agent": "NightProbe-Scanner/1.0"}
+from .common import BROWSER_HEADERS
+HEADERS = BROWSER_HEADERS
 
 
 def scan_xss(url: str, timeout: int = 6) -> dict:

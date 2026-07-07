@@ -5,6 +5,7 @@ Returns dict: { "Header-Name": "present" | "missing" }
 import requests
 import warnings
 warnings.filterwarnings("ignore")
+from .common import BROWSER_HEADERS
 
 SECURITY_HEADERS = [
     "Content-Security-Policy",
@@ -15,7 +16,7 @@ SECURITY_HEADERS = [
     "Referrer-Policy",
 ]
 
-HEADERS = {"User-Agent": "NightProbe-Scanner/1.0"}
+HEADERS = BROWSER_HEADERS
 
 
 def check_headers(url: str, timeout: int = 8) -> dict:

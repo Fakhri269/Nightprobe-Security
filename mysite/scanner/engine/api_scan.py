@@ -13,7 +13,8 @@ COMMON_PATHS = [
     "/wp-json", "/wp-json/wp/v2", "/.well-known/openapi.json",
 ]
 
-HEADERS = {"User-Agent": "NightProbe-Scanner/1.0"}
+from .common import BROWSER_HEADERS
+HEADERS = BROWSER_HEADERS
 
 
 def api_scan(url: str, timeout: int = 5) -> list:

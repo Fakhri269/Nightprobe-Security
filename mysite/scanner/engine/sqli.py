@@ -46,7 +46,8 @@ ERROR_SIGNATURES = [
     ("supplied argument is not a valid mysql", "MySQL invalid argument"),
 ]
 
-HEADERS = {"User-Agent": "NightProbe-Scanner/1.0"}
+from .common import BROWSER_HEADERS
+HEADERS = BROWSER_HEADERS
 
 
 def scan_sqli(url: str, timeout: int = 6) -> dict:
